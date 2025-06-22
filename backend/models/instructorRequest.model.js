@@ -20,5 +20,5 @@ const instructorRequestSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-export default mongoose.model("InstructorRequest", instructorRequestSchema);
+const InstructorRequest = mongoose.model("InstructorRequest", instructorRequestSchema);
+export default InstructorRequest;
