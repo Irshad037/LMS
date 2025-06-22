@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import connectMongoDB from './config/mongodb.js';
 import authRoutes from './routes/auth.route.js';
+import userRoutes from './routes/user.route.js';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json()); // For application/json
 app.use(express.urlencoded({ extended: true })); // For x-www-form-urlencoded
 
 app.use('/api/auth',authRoutes);
+app.use('/api/user',userRoutes);
 
 const PORT = process.env.PORT || 3000;
 
