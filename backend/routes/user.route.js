@@ -1,11 +1,13 @@
 import express from 'express';
 import { protectRoute } from '../middleware/protectRoute.js';
 import { isAdmin } from '../middleware/roleMiddleware.js';
-import { updateUserRole } from '../controllers/user.controller.js';
+import { approveInstructor,requestInstructor,rejectInstructor } from '../controllers/user.controller.js';
 
 
 const router= express.Router();
 
-router.put("/update-role", protectRoute, isAdmin, updateUserRole);
+router.put("/approve/:requestId", protectRoute,isAdmin,  approveInstructor);
+router.put("/rejecte/:requestId", protectRoute,isAdmin,  rejectInstructor);
+router.post("/request", protectRoute, requestInstructor);
 
 export default router;

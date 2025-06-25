@@ -21,4 +21,5 @@ const instructorRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 const InstructorRequest = mongoose.model("InstructorRequest", instructorRequestSchema);
+
 export default InstructorRequest;
