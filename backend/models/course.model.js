@@ -24,10 +24,12 @@ const courseSchema = new mongoose.Schema(
     },
     content: [
       {
-        type: String,
-        trim: true,
+        title: { type: String, required: true },
+        videoUrl: { type: String, required: true },
+        duration: { type: String },
+        publicId: { type: String, required: true },
       }
-    ],
+    ]
   },
   { timestamps: true }
 );

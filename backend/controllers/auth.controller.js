@@ -42,6 +42,7 @@ export const signup = async (req, res) => {
                 name: newUser.name,
                 email: newUser.email,
                 imageUrl: newUser.imageUrl,
+                role:user.role,
             })
         } else {
             return res.status(400).json({ error: 'Invalid User Data' })
@@ -73,6 +74,7 @@ export const login = async (req, res) => {
             name: user.name,
             email: user.email,
             imageUrl: user.imageUrl,
+            role:user.role,
         })
     } catch (error) {
         console.error("Error in Login controller: ", error.message);
