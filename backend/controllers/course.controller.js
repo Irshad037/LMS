@@ -213,4 +213,19 @@ export const showReviewToCourse = async (req, res)=>{
 
 }
 
+export const showAllCourse = async(req,res)=>{
+    try {
+        const courses = await Course.find()
+        .populate("instructor", "name email")
+        .select("title description category averageRating content instructor createdAt");
+        
+        res.status(200).json({ total: courses.length, courses });
+    } catch (error) {
+        console.log("Error in showAllCourse controller", error.message);
+        res.status(500).json({error:"Internal server error"});
+    }
+}
+
+
+
 
