@@ -188,4 +188,29 @@ export const addreviewToCourse = async (req, res) => {
     }
 }
 
+export const showReviewToCourse = async (req, res)=>{
+    try {
+        
+        const { courseId } = req.params;
+        
+        const course = await Course.findById(courseId)
+        .populate("reviews.user", "name email") 
+        .select("title reviews averageRating");
+    
+        if (!course) {
+            returnres.status(404).json({error: "Course not found"});
+        }
+    
+        res.status(200).json({
+          courseTitle: course.title,
+          averageRating: course.averageRating,
+          reviews: course.reviews,
+        })
+    } catch (error) {
+        console.log("Error in showReviewToCourse controller", error.message);
+        res.status(500).json({error: "Internal server error"});
+    }
+
+}
+
 
