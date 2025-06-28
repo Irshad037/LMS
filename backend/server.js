@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import connectMongoDB from './config/mongodb.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
-import courseRoutes from './routes/course.route.js';
+import courseRoutes from './routes/instructor.route.js';
 
 const app = express();
 

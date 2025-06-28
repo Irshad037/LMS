@@ -2,7 +2,9 @@ import express from 'express';
 import { protectRoute } from '../middleware/protectRoute.js';
 import { isAdmin} from '../middleware/roleMiddleware.js';
 import { 
-    approveInstructor,requestInstructor,rejectInstructor
+    approveInstructor,requestInstructor,rejectInstructor,getOwnProfile,
+    updateProfile,enrollInCourse,
+    getEnrolledCourses
  } from '../controllers/user.controller.js';
 
 
@@ -10,7 +12,12 @@ const router= express.Router();
 
 router.post("/request", protectRoute, requestInstructor);
 router.put("/approve/:requestId", protectRoute,isAdmin,  approveInstructor);
-router.put("/rejecte/:requestId", protectRoute,isAdmin,  rejectInstructor);
+router.put("/reject/:requestId", protectRoute,isAdmin,  rejectInstructor);
+router.get("/profile/:id", protectRoute, getOwnProfile)
+router.post("/update-profile", protectRoute, updateProfile)
+router.post("/enroll/:courseId", protectRoute, enrollInCourse);
+router.get("/enrolled-course", protectRoute, getEnrolledCourses)
+
 
 
 

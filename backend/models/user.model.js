@@ -16,11 +16,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 6,
     },
-    imageUrl: {
+    profileImg: {
       type: String,
       default: "",
     },
-    enrolledCourse: [
+    enrolledCourses: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",

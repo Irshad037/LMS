@@ -4,9 +4,8 @@ import { isInstructor } from '../middleware/roleMiddleware.js';
 import { uploadVideo } from "../middleware/upload.js";
 import { 
     addreviewToCourse,addVideoToCourse, createCourse, deleteCourse, showReviewToCourse,
-    deleteVideoFromCourse, getAllMyCreatedCourses, 
-    showAllCourse
-} from '../controllers/course.controller.js';
+    deleteVideoFromCourse, getAllMyCreatedCourses, showAllCourse,searchCourse
+} from '../controllers/instructor.controller.js';
 
 const router = express.Router();
 
@@ -18,5 +17,6 @@ router.get("/instructor/courses",protectRoute,isInstructor,getAllMyCreatedCourse
 router.post("/:courseId/add-review", protectRoute, addreviewToCourse);
 router.get("/:courseId/show-review", protectRoute, showReviewToCourse);
 router.get("/all-courses", protectRoute, showAllCourse);
+router.get("/search", protectRoute, searchCourse)
 
 export default router;

@@ -22,6 +22,8 @@ const courseSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    thumbnail: { type: String, required: true },
+
     content: [
       {
         title: { type: String, required: true },

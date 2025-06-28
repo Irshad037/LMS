@@ -3,10 +3,10 @@ import Course from "../models/course.model.js";
 
 export const createCourse = async (req, res) => {
     try {
-        const { title, description, category } = req.body;
+        const { title, description, category , thumbnail} = req.body;
 
         // Validate required fields
-        if (!title || !description || !category) {
+        if (!title || !description || !category||! thumbnail) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -14,6 +14,7 @@ export const createCourse = async (req, res) => {
             title,
             description,
             category,
+            thumbnail,
             content: [], // Content (e.g., videos) will be added separately
             instructor: req.user._id,
         });
@@ -226,6 +227,26 @@ export const showAllCourse = async(req,res)=>{
     }
 }
 
+export const searchCourse = async (req,res)=>{
+    try {
+        const { query } = req.query;
+        if(!query)return res.status(400).json({error:"Search query is required" })  
+
+        const course = await Course.find({
+            $or:[
+                {title:{$regex:query, $options: "i" } },
+                {category:{$regex:query, $options: "i" } }
+            ]
+        })
+        .populate("instructor","name email")
+        .select("title description category averageRating instructor createdAt");
+
+        res.status(200).json(course);
+    } catch (error) {
+        console.log("Error in searchCourse controller", error.message);
+        res.status(500).json({error: "Internal sever error"});
+    }
+}
 
 
 
