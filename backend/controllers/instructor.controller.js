@@ -4,7 +4,7 @@ import Course from "../models/course.model.js";
 export const createCourse = async (req, res) => {
     try {
         const { title, description, category } = req.body;
-        let {thumbnail } = req.body;
+        let { thumbnail } = req.body;
 
         // Validate required fields
         if (!title || !description || !category || !thumbnail) {
@@ -56,53 +56,42 @@ export const deleteCourse = async (req, res) => {
 };
 
 export const addSectionToCourse = async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const { sectionTitle } = req.body;
+    try {
+        const { courseId } = req.params;
+        const { sectionTitle } = req.body;
 
-    if (!sectionTitle) {
-      return res.status(400).json({ error: "Section title is required" });
+        if (!sectionTitle) {
+            return res.status(400).json({ error: "Section title is required" });
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
+        }
+
+        if (String(course.instructor) !== String(req.user._id)) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        // Check if section already exists
+        const exists = course.content.some(section => section.sectionTitle === sectionTitle);
+        if (exists) {
+            return res.status(400).json({ error: "Section already exists" });
+        }
+
+        course.content.push({ sectionTitle, videos: [] });
+
+        await course.save();
+        res.status(201).json({ message: "✅ Section added successfully", course });
+    } catch (error) {
+        console.error("❌ Error in addSectionToCourse:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ error: "Course not found" });
-    }
-
-    if (String(course.instructor) !== String(req.user._id)) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    // Check if section already exists
-    const exists = course.content.some(section => section.sectionTitle === sectionTitle);
-    if (exists) {
-      return res.status(400).json({ error: "Section already exists" });
-    }
-
-    course.content.push({ sectionTitle, videos: [] });
-
-    await course.save();
-    res.status(201).json({ message: "✅ Section added successfully", course });
-  } catch (error) {
-    console.error("❌ Error in addSectionToCourse:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
 
-export const deleteSectionFromCourse = async(req, res)=>{
-    const {courseId, SsectionId} = req.params;
-}
-
-export const addVideoToSection = async (req, res) => {
+export const deleteSectionFromCourse = async (req, res) => {
   try {
-    const { courseId } = req.params;
-    const { sectionTitle, title } = req.body;
-    const videoUrl = req.file?.path;
-    const publicId = req.file?.filename;
-
-    if (!videoUrl || !title || !sectionTitle || !publicId) {
-      return res.status(400).json({ error: "Title, sectionTitle, and video file are required" });
-    }
+    const { courseId, sectionId } = req.params;
 
     const course = await Course.findById(courseId);
     if (!course) {
@@ -110,28 +99,73 @@ export const addVideoToSection = async (req, res) => {
     }
 
     if (String(course.instructor) !== String(req.user._id)) {
-      return res.status(403).json({ error: "Unauthorized" });
+      return res.status(403).json({ error: "You are not the instructor of this course" });
     }
 
-    const sectionIndex = course.content.findIndex(sec => sec.sectionTitle === sectionTitle);
-
+    const sectionIndex = course.content.findIndex(sec => String(sec._id) === sectionId);
     if (sectionIndex === -1) {
       return res.status(404).json({ error: "Section not found" });
     }
 
-    course.content[sectionIndex].videos.push({
-      title,
-      videoUrl,
-      publicId,
-    });
+    const section = course.content[sectionIndex];
 
+    // 🧹 Delete videos from Cloudinary
+    for (const video of section.videos) {
+      if (video.publicId) {
+        await cloudinary.uploader.destroy(video.publicId, { resource_type: "video" });
+      }
+    }
+
+    // 🧼 Remove section from course
+    course.content.splice(sectionIndex, 1);
     await course.save();
 
-    res.status(200).json({ message: "✅ Video added to section", course });
+    res.status(200).json({ message: "✅ Section deleted successfully", deletedSection: section });
   } catch (error) {
-    console.error("❌ Error in addVideoToSection:", error.message);
+    console.error("❌ Error in deleteSectionFromCourse controller:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+export const addVideoToSection = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const { sectionTitle, title } = req.body;
+        const videoUrl = req.file?.path;
+        const publicId = req.file?.filename;
+
+        if (!videoUrl || !title || !sectionTitle || !publicId) {
+            return res.status(400).json({ error: "Title, sectionTitle, and video file are required" });
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
+        }
+
+        if (String(course.instructor) !== String(req.user._id)) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        const sectionIndex = course.content.findIndex(sec => sec.sectionTitle === sectionTitle);
+
+        if (sectionIndex === -1) {
+            return res.status(404).json({ error: "Section not found" });
+        }
+
+        course.content[sectionIndex].videos.push({
+            title,
+            videoUrl,
+            publicId,
+        });
+
+        await course.save();
+
+        res.status(200).json({ message: "✅ Video added to section", course });
+    } catch (error) {
+        console.error("❌ Error in addVideoToSection:", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 
