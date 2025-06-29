@@ -3,12 +3,16 @@ import Course from "../models/course.model.js";
 
 export const createCourse = async (req, res) => {
     try {
-        const { title, description, category , thumbnail} = req.body;
+        const { title, description, category } = req.body;
+        let {thumbnail } = req.body;
 
         // Validate required fields
-        if (!title || !description || !category||! thumbnail) {
+        if (!title || !description || !category || !thumbnail) {
             return res.status(400).json({ error: "All fields are required" });
         }
+
+        const uploadReasponse = await cloudinary.uploader.upload(thumbnail);
+        thumbnail = uploadReasponse.secure_url;
 
         const course = new Course({
             title,
@@ -51,44 +55,85 @@ export const deleteCourse = async (req, res) => {
     }
 };
 
+export const addSectionToCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { sectionTitle } = req.body;
 
-export const addVideoToCourse = async (req, res) => {
-    try {
-        const { courseId } = req.params;
-        const { title } = req.body;
-
-        const videoUrl = req.file?.path;
-        const publicId = req.file?.filename; // Cloudinary publicId
-
-        if (!videoUrl || !title || !publicId) {
-            return res.status(400).json({ error: "Title and video file are required" });
-        }
-
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
-        }
-
-        // Only allow the instructor who owns the course
-        if (String(course.instructor) !== String(req.user._id)) {
-            return res.status(403).json({ error: "You are not the instructor of this course" });
-        }
-
-        // Push video object to content array
-        course.content.push({
-            title,
-            videoUrl,
-            publicId, // Store this for future deletion from Cloudinary
-        });
-
-        await course.save();
-
-        res.status(200).json({ message: "✅ Video added to course", course });
-    } catch (error) {
-        console.error("❌ Error in addVideoToCourse:", error.message);
-        res.status(500).json({ error: "Internal server error" });
+    if (!sectionTitle) {
+      return res.status(400).json({ error: "Section title is required" });
     }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    if (String(course.instructor) !== String(req.user._id)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    // Check if section already exists
+    const exists = course.content.some(section => section.sectionTitle === sectionTitle);
+    if (exists) {
+      return res.status(400).json({ error: "Section already exists" });
+    }
+
+    course.content.push({ sectionTitle, videos: [] });
+
+    await course.save();
+    res.status(201).json({ message: "✅ Section added successfully", course });
+  } catch (error) {
+    console.error("❌ Error in addSectionToCourse:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
+
+export const deleteSectionFromCourse = async(req, res)=>{
+    const {courseId, SsectionId} = req.params;
+}
+
+export const addVideoToSection = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { sectionTitle, title } = req.body;
+    const videoUrl = req.file?.path;
+    const publicId = req.file?.filename;
+
+    if (!videoUrl || !title || !sectionTitle || !publicId) {
+      return res.status(400).json({ error: "Title, sectionTitle, and video file are required" });
+    }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    if (String(course.instructor) !== String(req.user._id)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const sectionIndex = course.content.findIndex(sec => sec.sectionTitle === sectionTitle);
+
+    if (sectionIndex === -1) {
+      return res.status(404).json({ error: "Section not found" });
+    }
+
+    course.content[sectionIndex].videos.push({
+      title,
+      videoUrl,
+      publicId,
+    });
+
+    await course.save();
+
+    res.status(200).json({ message: "✅ Video added to section", course });
+  } catch (error) {
+    console.error("❌ Error in addVideoToSection:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 export const deleteVideoFromCourse = async (req, res) => {
     try {
@@ -189,62 +234,62 @@ export const addreviewToCourse = async (req, res) => {
     }
 }
 
-export const showReviewToCourse = async (req, res)=>{
+export const showReviewToCourse = async (req, res) => {
     try {
-        
+
         const { courseId } = req.params;
-        
+
         const course = await Course.findById(courseId)
-        .populate("reviews.user", "name email") 
-        .select("title reviews averageRating");
-    
+            .populate("reviews.user", "name email")
+            .select("title reviews averageRating");
+
         if (!course) {
-            returnres.status(404).json({error: "Course not found"});
+            return res.status(404).json({ error: "Course not found" });
         }
-    
+
         res.status(200).json({
-          courseTitle: course.title,
-          averageRating: course.averageRating,
-          reviews: course.reviews,
+            courseTitle: course.title,
+            averageRating: course.averageRating,
+            reviews: course.reviews,
         })
     } catch (error) {
         console.log("Error in showReviewToCourse controller", error.message);
-        res.status(500).json({error: "Internal server error"});
+        res.status(500).json({ error: "Internal server error" });
     }
 
 }
 
-export const showAllCourse = async(req,res)=>{
+export const showAllCourse = async (req, res) => {
     try {
         const courses = await Course.find()
-        .populate("instructor", "name email")
-        .select("title description category averageRating content instructor createdAt");
-        
+            .populate("instructor", "name email")
+            .select("title description category averageRating content instructor createdAt");
+
         res.status(200).json({ total: courses.length, courses });
     } catch (error) {
         console.log("Error in showAllCourse controller", error.message);
-        res.status(500).json({error:"Internal server error"});
+        res.status(500).json({ error: "Internal server error" });
     }
 }
 
-export const searchCourse = async (req,res)=>{
+export const searchCourse = async (req, res) => {
     try {
         const { query } = req.query;
-        if(!query)return res.status(400).json({error:"Search query is required" })  
+        if (!query) return res.status(400).json({ error: "Search query is required" })
 
         const course = await Course.find({
-            $or:[
-                {title:{$regex:query, $options: "i" } },
-                {category:{$regex:query, $options: "i" } }
+            $or: [
+                { title: { $regex: query, $options: "i" } },
+                { category: { $regex: query, $options: "i" } }
             ]
         })
-        .populate("instructor","name email")
-        .select("title description category averageRating instructor createdAt");
+            .populate("instructor", "name email")
+            .select("title description category averageRating instructor createdAt");
 
         res.status(200).json(course);
     } catch (error) {
         console.log("Error in searchCourse controller", error.message);
-        res.status(500).json({error: "Internal sever error"});
+        res.status(500).json({ error: "Internal sever error" });
     }
 }
 

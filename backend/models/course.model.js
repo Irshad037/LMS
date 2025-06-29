@@ -26,10 +26,15 @@ const courseSchema = new mongoose.Schema(
 
     content: [
       {
-        title: { type: String, required: true },
-        videoUrl: { type: String, required: true },
-        duration: { type: String },
-        publicId: { type: String, required: true },
+        sectionTitle: { type: String, required: true },
+        videos: [
+          {
+            title: { type: String, required: true },
+            videoUrl: { type: String, required: true },
+            duration: { type: String },
+            publicId: { type: String, required: true }
+          }
+        ]
       }
     ],
     enrolledStudents: [{
