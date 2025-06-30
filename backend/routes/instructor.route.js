@@ -5,9 +5,7 @@ import { uploadVideo } from "../middleware/upload.js";
 import { 
     addreviewToCourse, createCourse, deleteCourse, showReviewToCourse,
     deleteVideoFromCourse, getAllMyCreatedCourses, showAllCourse,searchCourse,addVideoToSection,
-    addSectionToCourse,
-    deleteSectionFromCourse,
-    
+    addSectionToCourse,deleteSectionFromCourse ,
 } from '../controllers/instructor.controller.js';
 
 const router = express.Router();
