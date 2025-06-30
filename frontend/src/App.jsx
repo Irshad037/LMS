@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Navbar from './pages/Navbar';
 import Footer from './pages/Footer';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
 const App = () => {
   return (
@@ -11,8 +13,8 @@ const App = () => {
 
       <Routes>
         <Route path='/' element={HomePage} />
-        <Route path='/signup' element={HomePage} />
-        <Route path='/login' element={HomePage} />
+        <Route path='/signup' element={SignUpPage} />
+        <Route path='/login' element={LoginPage} />
       </Routes>
 
       <Footer/>
