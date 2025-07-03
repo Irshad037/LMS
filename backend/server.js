@@ -12,7 +12,11 @@ const app = express();
 // Connect to MongoDB
 await connectMongoDB();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+
 app.use(express.json()); // For application/json
 app.use(express.urlencoded({ extended: true })); // For x-www-form-urlencoded
 app.use(cookieParser());  // ✅ Use cookie-parser middleware

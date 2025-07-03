@@ -42,7 +42,7 @@ export const signup = async (req, res) => {
                 name: newUser.name,
                 email: newUser.email,
                 imageUrl: newUser.imageUrl,
-                role:user.role,
+                role: newUser.role,
             })
         } else {
             return res.status(400).json({ error: 'Invalid User Data' })
@@ -97,4 +97,13 @@ export const logout = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+export const checkAuth = async(req, res)=>{
+    try {
+        res.status(200).json(req.user);
+    } catch (error) {
+        console.log("error in checkAuth controller", error.message);
+        res.status(500).json({error: "Internal server error"});
+    }
+}
 

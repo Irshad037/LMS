@@ -1,23 +1,46 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MdOutlineMail, MdPassword } from 'react-icons/md';
 import { FaUser } from "react-icons/fa";
 import { Link } from 'react-router-dom'
-
+import useAuthStore from '../store/useAuthStore';
+import { Eye, EyeClosed, Loader2, } from "lucide-react";
 
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+
+  const { login, isLoggingIn } = useAuthStore();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    login(formData);
+    console.log(formData);
+    
+  }
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
   return (
-    <div className='max-w-screen-xl mx-auto flex  h-screen px-10 gap-8'>
+    <div className='max-w-screen-xl mx-auto flex  h-screen px-12 '>
       <div className="flex-1 hidden lg:flex items-center  justify-center ">
         <img src="/study.png" className='w-[450px]' />
       </div>
 
-      <form className='flex-1 flex  sm:items-center md:items-center flex-col justify-center gap-4'>
+      <form onSubmit={handleSubmit} className='flex-1 flex flex-col justify-center gap-4 '>
 
         <h1 className='text-4xl font-extrabold flex-col'>Let go.</h1>
         <label className='w-[300px] h-[45px] p-2 gap-1 border-2 flex items-center justify-between border-black rounded-[7px]'>
           <MdOutlineMail className='w-[25px]' />
           <input
-            type="email" placeholder='Email' className='flex-1 cursor-pointer font-medium border-none outline-none'
+            type="email" placeholder='Email' className='flex-1  font-medium border-none outline-none'
+            name='email'
+            value={formData.email}
+            onChange={handleChange}
           />
         </label>
 
@@ -25,8 +48,15 @@ const LoginPage = () => {
         <label className='w-[300px] h-[45px] p-2 gap-1 border-2 flex items-center justify-between border-black rounded-[7px]'>
           <MdPassword className='w-[25px]' />
           <input
-            type="password" placeholder='Password' className='flex-1 cursor-pointer font-medium border-none outline-none'
+            type={showPassword?"text":"password"} placeholder='Password' className='flex-1  font-medium border-none outline-none'
+            name='password'
+            value={formData.password}
+            onChange={handleChange}
           />
+          {showPassword ?
+            <Eye onClick={() => setShowPassword(!showPassword)} />
+            : <EyeClosed onClick={() => setShowPassword(!showPassword)}
+          />}
         </label>
 
         <div className="flex flex-col gap-1 w-[300px]">
@@ -39,7 +69,16 @@ const LoginPage = () => {
           </div>
 
           <button className="btn btn-primary w-full rounded-full text-white">
-            Sign in
+            {isLoggingIn ? (
+            <>
+              <Loader2 className="size-5 animate-spin" />
+              Loading...
+            </>
+          ) :
+            (
+              "Login"
+            )
+          }
           </button>
 
         </div>
