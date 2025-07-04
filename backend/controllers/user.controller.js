@@ -5,21 +5,49 @@ import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from 'cloudinary';
 
 
-
 export const requestInstructor = async (req, res) => {
+  try {
+    const { email, bio } = req.body;
+
+    if (!email || !bio) return res.status(400).json({ error: "Email and Bio are required" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const existing = await InstructorRequest.findOne({ user: user._id });
+    if (existing) {
+      return res.status(400).json({ error: "You have already requested." });
+    }
+
+    const request = await InstructorRequest.create({
+      user: user._id,
+      bio: bio.trim(),
+    });
+
+    res.status(201).json({ message: "Request sent", request });
+  } catch (error) {
+    console.error("Error in requestInstructor controller:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+export const getStatus = async (req, res)=>{
+    const userId = req.user._id;
     try {
-        const existing = await InstructorRequest.findOne({ user: req.user._id });
-        if (existing) return res.status(400).json({ error: "You have already requested." });
+        const user = await User.findById(userId);
+        if(!user) return res.status(404).json({error: "User not found"});
 
-        const request = await InstructorRequest.create({
-            user: req.user._id,
-            message: req.body.message || "",
-        })
+        const request = await InstructorRequest.findOne({user:user._id}).populate("user", "name email profileImg");;
+        if (!request) {
+            return res.status(404).json({ error: "Request not found" });
+        }
 
-        res.status(201).json({ message: "Request sent", request });
+        res.status(200).json(request);
+
     } catch (error) {
-        console.log("Erorr in requestInstructor controller", error.message);
-        res.status(500).json({ error: "Internal server error" })
+        console.log("Error in getStatus controller", error.message);
+        res.status(500).json({error: "Internal server error"})
     }
 }
 

@@ -13,7 +13,7 @@ const instructorRequestSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    message: {
+    bio: {
       type: String,
       trim: true,
     },
