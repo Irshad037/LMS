@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useUserStore } from '../../store/useUserStore'
+import useAuthStore from '../../store/useAuthStore'
 
 const BecomeEducatorPage = () => {
+  const {authUser} = useAuthStore();
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: authUser.name,
+    email: authUser.email,
     bio: ''
   })
 
@@ -16,16 +19,19 @@ const BecomeEducatorPage = () => {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const {requestForInstructor, isRequesting} = useUserStore();
+
+  const handleSubmit = async(e) => {
     e.preventDefault()
+    await requestForInstructor(formData);
     console.log('Educator application submitted:', formData)
-    // TODO: Send to backend or Zustand logic here
+    setFormData({ name: '', email: '', bio: '' });
   }
 
   return (
-    <div>
+    <div >
       {/* Hero Section */}
-      <section className="text-center py-16 px-4">
+      <section className="text-center py-16 px-4 ">
         <h1 className="text-4xl font-bold mb-4">Share Your Knowledge. Empower the World.</h1>
         <p className="text-gray-600 max-w-xl mx-auto mb-6">
           Join Learnify as an instructor and start creating impactful learning experiences.
@@ -38,7 +44,7 @@ const BecomeEducatorPage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-12 px-4 bg-gray-100">
+      <section className="py-12 px-4 bg-gray-200">
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="p-6 rounded-xl bg-white shadow">
             <h3 className="text-xl font-semibold mb-2">Flexible Teaching</h3>
