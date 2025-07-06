@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/useAuthStore';
 import { Loader } from 'lucide-react';
 import BecomeEducatorPage from './pages/user/BecomeEducatorPage';
+import ProfilePage from './pages/user/ProfilePage';
 
 const App = () => {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -33,7 +34,7 @@ const App = () => {
     );
 
   return (
-    <div>
+    <div className='bg-slate-200'>
       <Toaster />
       <Navbar />
 
@@ -42,6 +43,7 @@ const App = () => {
         <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to={'/'} />} />
         <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to={'/'} />} />
         <Route path='/become-educator' element={authUser ? <BecomeEducatorPage /> : <Navigate to={'/login'} />} />
+        <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={'/login'} />} />
       </Routes>
 
       <Footer />
