@@ -11,6 +11,13 @@ import { Loader } from 'lucide-react';
 import BecomeEducatorPage from './pages/user/BecomeEducatorPage';
 import ProfilePage from './pages/user/ProfilePage';
 
+import DashboardPage from './pages/educator/DashboardPage';
+import AddCoursePage from './pages/educator/AddCoursePage';
+import MyCoursePage from './pages/educator/MyCoursePage';
+import StudentEnrolledPage from './pages/educator/StudentEnrolledPage';
+import EducatoreSideBar from './pages/educator/EducatoreSideBar';
+import EducatorLayout from './pages/educator/EducatorLayout';
+
 const App = () => {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
 
@@ -44,6 +51,16 @@ const App = () => {
         <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to={'/'} />} />
         <Route path='/become-educator' element={authUser ? <BecomeEducatorPage /> : <Navigate to={'/login'} />} />
         <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={'/login'} />} />
+        <Route path='/educator' element={authUser ? <ProfilePage /> : <Navigate to={'/login'} />} />
+
+
+        <Route path="/educator" element={authUser?.role === 'instructor' ? <EducatorLayout /> : <Navigate to="/" />}>
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="add-course" element={<AddCoursePage />} />
+          <Route path="my-courses" element={<MyCoursePage />} />
+          <Route path="students-enrolled" element={<StudentEnrolledPage />} />
+        </Route>
+
       </Routes>
 
       <Footer />

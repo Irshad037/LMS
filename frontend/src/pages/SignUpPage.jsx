@@ -42,7 +42,7 @@ const SignUpPage = () => {
         <label className='w-[350px] h-[45px] p-2 gap-1 border-2 flex items-center justify-between border-black rounded-[7px]'>
           <FaUser className='w-[25px]' />
           <input
-            type="text" placeholder='Name' className='flex-1 text-stone-800 font-medium border-none outline-none'
+            type="text" placeholder='Name' className='flex-1 bg-transparent text-stone-800 font-medium border-none outline-none'
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -52,7 +52,7 @@ const SignUpPage = () => {
         <label className='w-[350px] h-[45px] p-2 gap-1 border-2 flex items-center justify-between border-black rounded-[7px]'>
           <MdOutlineMail className='w-[25px]' />
           <input
-            type="email" placeholder='Email' className='flex-1 text-stone-800 font-medium border-none outline-none'
+            type="email" placeholder='Email' className='flex-1 bg-transparent text-stone-800 font-medium border-none outline-none'
             name='email'
             value={formData.email}
             onChange={handleChange}
@@ -62,7 +62,7 @@ const SignUpPage = () => {
         <label className='w-[350px] h-[45px] p-2 gap-1 border-2 flex items-center justify-between border-black rounded-[7px]'>
           <MdPassword className='w-[25px]' />
           <input
-            type={showPassword ? "text" : "password"} placeholder='Password' className='flex-1  font-medium border-none outline-none'
+            type={showPassword ? "text" : "password"} placeholder='Password' className='flex-1 bg-transparent font-medium border-none outline-none'
             name='password'
             value={formData.password}
             onChange={handleChange}

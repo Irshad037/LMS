@@ -22,7 +22,7 @@ const Navbar = () => {
             {authUser.role != "instructor" && (
               <>
                 <Link to={'/become-educator'} className='text-[18px] link link-hover text-neutral-600 font-normal'>
-                 Become Educator
+                  Become Educator
                 </Link>
                 |
               </>
@@ -30,8 +30,8 @@ const Navbar = () => {
 
             {authUser.role == "instructor" && (
               <>
-                <Link to="/my-courses" className="text-[18px] link link-hover text-neutral-600 font-normal">
-                 Educator Dashboard 
+                <Link to="/educator/dashboard" className="text-[18px] link link-hover text-neutral-600 font-normal">
+                  Educator Dashboard
                 </Link>
 
                 |
@@ -42,13 +42,17 @@ const Navbar = () => {
               My Enrollments
             </Link>
 
-            <Link to="/profile" className="bg-zinc-700 w-[50px] h-[50px] rounded-full flex items-center justify-center">
-              <img
-                src={authUser?.profileImg || user_icon}
-                alt="User"
-                className="w-12 h-12 object-cover rounded-full cursor-pointer"
-              />
-            </Link>
+            {authUser.role == "instructor" &&
+              <Link to="/profile" className="bg-zinc-700 w-[50px] h-[50px] rounded-full flex items-center justify-center">
+                <img
+                  src={authUser?.profileImg || user_icon}
+                  alt="User"
+                  className="w-12 h-12 object-cover bg-white rounded-full cursor-pointer"
+                />
+              </Link>
+            }
+
+
 
             <button className="btn btn-primary rounded-md" onClick={() => logout()}>
               <LogOut className="size-5" />
