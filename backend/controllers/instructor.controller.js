@@ -3,11 +3,11 @@ import Course from "../models/course.model.js";
 
 export const createCourse = async (req, res) => {
     try {
-        const { title, description, category } = req.body;
+        const { title, description, category, coursePrice, discount } = req.body;
         let { thumbnail } = req.body;
 
         // Validate required fields
-        if (!title || !description || !category || !thumbnail) {
+        if (!title || !description || !category || !thumbnail || !coursePrice || !discount) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -21,6 +21,8 @@ export const createCourse = async (req, res) => {
             thumbnail,
             content: [], // Content (e.g., videos) will be added separately
             instructor: req.user._id,
+            coursePrice,
+            discount,
         });
 
         await course.save();

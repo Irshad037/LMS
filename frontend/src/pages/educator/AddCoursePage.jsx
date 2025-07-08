@@ -29,8 +29,8 @@ const AddCoursePage = () => {
   }
 
   return (
-    < div className = ' flex items-center ' >
-      <form className=" w-[40%] rounded-xl p-6 mt-7 flex flex-col gap-6" onSubmit={handleSubmit}>
+    < div className = ' flex items-center  justify-center' >
+      <form className=" w-[40%] rounded-xl p-6 my-20 shadow bg-white flex flex-col gap-6" onSubmit={handleSubmit}>
         <div>
           <h2 className="text-xl font-semibold text-zinc-700 mb-1">Course Title</h2>
           <input
