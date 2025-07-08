@@ -10,7 +10,7 @@ const Navbar = () => {
   const { authUser, logout } = useAuthStore();
 
   return (
-    <div className='w-full flex items-center md:justify-center lg:justify-between  px-[130px] border-b-[1px] border-stone-700'>
+    <div className='w-full bg-white flex items-center md:justify-center lg:justify-between  px-[130px] border-b-[1px] shadow border-zinc-300'>
       <Link to="/" className='flex items-center justify-center gap-1'>
         <img src="/study.png" className='w-[70px]' />
         <h1 className='text-3xl font-extrabold'>Learnify</h1>

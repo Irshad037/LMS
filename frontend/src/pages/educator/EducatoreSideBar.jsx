@@ -13,8 +13,8 @@ const navItems = [
 ];
 
 const EducatorSidebar = () => {
-  return (
-    <div className="h-screen flex flex-col bg-white w-64 border-r-2 border-zinc-200 px-6 py-8 gap-5">
+  return ( 
+    <div className="h-screen flex flex-col bg-white w-64 border-r-2 shadow border-zinc-300 px-6 py-8 gap-5">
       {navItems.map(({ name, icon, path }) => (
         <NavLink
           key={name}
