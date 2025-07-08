@@ -23,7 +23,9 @@ const courseSchema = new mongoose.Schema(
       trim: true,
     },
     thumbnail: { type: String, required: true },
-
+    coursePrice:{type:Number, required: true},
+    discount:{type:Number, required: true},
+    
     content: [
       {
         sectionTitle: { type: String, required: true },
@@ -37,6 +39,7 @@ const courseSchema = new mongoose.Schema(
         ]
       }
     ],
+
     enrolledStudents: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
