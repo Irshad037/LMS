@@ -1,6 +1,7 @@
 import React from 'react'
 import course1 from '../../assets/course_1.png';
 import { dummyCourses } from '../../assets/assets'
+import { Link } from 'react-router-dom';
 
 const MyCoursePage = () => {
   return (
@@ -22,10 +23,10 @@ const MyCoursePage = () => {
           dummyCourses.map((course) => (
             <div className='flex items-center justify-between p-4 mt-6 border-b border-zinc-500'>
               
-              <div className='flex basis-[30%]'>
+              <Link to={`/player/${course._id}`} className='flex basis-[30%] cursor-pointer'>
                 <img src={course1} alt="" className='w-24 ' />
                 <h1>{course.title}</h1>
-              </div>
+              </Link>
 
               <div>2</div>
               <div>4.5</div>

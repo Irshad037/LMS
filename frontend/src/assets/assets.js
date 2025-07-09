@@ -211,104 +211,103 @@ export const dummyStudentEnrolled = [
     }
 ]
 
-// export const dummyCourses = [
-// //   {
-// //     title: "Full Stack Web Development",
-// //     description: "Master MERN Stack and build real-world projects.",
-// //     instructor: "64fbd5d2a1c88a6d12123abc", // Replace with valid ObjectId
-// //     category: "Web Development",
-// //     thumbnail: "/images/fullstack.png",
-// //     coursePrice: 4999,
-// //     discount: 20,
-// //     content: [
-// //       {
-// //         sectionTitle: "Introduction",
-// //         videos: [
-// //           {
-// //             title: "Welcome to the Course",
-// //             videoUrl: "https://example.com/video1.mp4",
-// //             duration: "05:12",
-// //             publicId: "video1_public_id"
-// //           },
-// //           {
-// //             title: "Course Structure Overview",
-// //             videoUrl: "https://example.com/video2.mp4",
-// //             duration: "07:45",
-// //             publicId: "video2_public_id"
-// //           }
-// //         ]
-// //       },
-// //       {
-// //         sectionTitle: "Frontend Development",
-// //         videos: [
-// //           {
-// //             title: "HTML & CSS Basics",
-// //             videoUrl: "https://example.com/video3.mp4",
-// //             duration: "12:30",
-// //             publicId: "video3_public_id"
-// //           }
-// //         ]
-// //       }
-// //     ],
-// //     enrolledStudents: [],
-// //     reviews: [],
-// //     averageRating: 0
-// //   },
-// //   {
-// //     title: "Mastering Python for Data Science",
-// //     description: "Learn Python from basics to advanced and start your Data Science career.",
-// //     instructor: "64fbd5d2a1c88a6d12123abc",
-// //     category: "Data Science",
-// //     thumbnail: "/images/python_ds.png",
-// //     coursePrice: 2999,
-// //     discount: 10,
-// //     content: [
-// //       {
-// //         sectionTitle: "Getting Started with Python",
-// //         videos: [
-// //           {
-// //             title: "Installing Python",
-// //             videoUrl: "https://example.com/video4.mp4",
-// //             duration: "06:10",
-// //             publicId: "video4_public_id"
-// //           }
-// //         ]
-// //       }
-// //     ],
-// //     enrolledStudents: [],
-// //     reviews: [],
-// //     averageRating: 0
-// //   },
-// //   {
-// //     title: "UI/UX Design Fundamentals",
-// //     description: "Learn how to design beautiful and user-friendly interfaces.",
-// //     instructor: "64fbd5d2a1c88a6d12123abc",
-// //     category: "Design",
-// //     thumbnail: "/images/uiux.png",
-// //     coursePrice: 1999,
-// //     discount: 15,
-// //     content: [
-// //       {
-// //         sectionTitle: "UI Basics",
-// //         videos: [
-// //           {
-// //             title: "What is UI Design?",
-// //             videoUrl: "https://example.com/video5.mp4",
-// //             duration: "08:00",
-// //             publicId: "video5_public_id"
-// //           }
-// //         ]
-// //       }
-// //     ],
-// //     enrolledStudents: [],
-// //     reviews: [],
-// //     averageRating: 0
-// //   }
+export const dummyCoursesPlayer = [
+  {
+    title: "Full Stack Web Development",
+    description: "Master MERN Stack and build real-world projects.",
+    instructor: "64fbd5d2a1c88a6d12123abc", // Replace with valid ObjectId
+    category: "Web Development",
+    thumbnail: "/course_1.png",
+    coursePrice: 4999,
+    discount: 20,
+    content: [
+      {
+        sectionTitle: "Introduction",
+        videos: [
+          {
+            title: "Welcome to the Course",
+            videoUrl: "https://example.com/video1.mp4",
+            duration: "05:12",
+            publicId: "video1_public_id"
+          },
+          {
+            title: "Course Structure Overview",
+            videoUrl: "https://example.com/video2.mp4",
+            duration: "07:45",
+            publicId: "video2_public_id"
+          }
+        ]
+      },
+      {
+        sectionTitle: "Frontend Development",
+        videos: [
+          {
+            title: "HTML & CSS Basics",
+            videoUrl: "https://example.com/video3.mp4",
+            duration: "12:30",
+            publicId: "video3_public_id"
+          }
+        ]
+      }
+    ],
+    enrolledStudents: [],
+    reviews: [],
+    averageRating: 0
+  },
+  {
+    title: "Mastering Python for Data Science",
+    description: "Learn Python from basics to advanced and start your Data Science career.",
+    instructor: "64fbd5d2a1c88a6d12123abc",
+    category: "Data Science",
+    thumbnail: "/images/python_ds.png",
+    coursePrice: 2999,
+    discount: 10,
+    content: [
+      {
+        sectionTitle: "Getting Started with Python",
+        videos: [
+          {
+            title: "Installing Python",
+            videoUrl: "https://example.com/video4.mp4",
+            duration: "06:10",
+            publicId: "video4_public_id"
+          }
+        ]
+      }
+    ],
+    enrolledStudents: [],
+    reviews: [],
+    averageRating: 0
+  },
+  {
+    title: "UI/UX Design Fundamentals",
+    description: "Learn how to design beautiful and user-friendly interfaces.",
+    instructor: "64fbd5d2a1c88a6d12123abc",
+    category: "Design",
+    thumbnail: "/images/uiux.png",
+    coursePrice: 1999,
+    discount: 15,
+    content: [
+      {
+        sectionTitle: "UI Basics",
+        videos: [
+          {
+            title: "What is UI Design?",
+            videoUrl: "https://example.com/video5.mp4",
+            duration: "08:00",
+            publicId: "video5_public_id"
+          }
+        ]
+      }
+    ],
+    enrolledStudents: [],
+    reviews: [],
+    averageRating: 0
+  }
 
-// // src/assets/assets.js
-// ];
+];
 
-// src/assets/assets.js
+
 
 
 export const dummyCourses = [
