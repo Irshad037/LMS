@@ -38,7 +38,7 @@ const Navbar = () => {
               </>
             )}
 
-            <Link className='text-[18px] link link-hover text-neutral-600 font-normal'>
+            <Link to={'my-enrollments'} className='text-[18px] link link-hover text-neutral-600 font-normal'>
               My Enrollments
             </Link>
 
