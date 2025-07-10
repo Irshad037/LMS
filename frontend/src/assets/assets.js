@@ -252,7 +252,7 @@ export const dummyCoursesPlayer = [
     ],
     enrolledStudents: [],
     reviews: [],
-    averageRating: 0
+    averageRating: 4
   },
   {
     title: "Mastering Python for Data Science",
@@ -277,7 +277,7 @@ export const dummyCoursesPlayer = [
     ],
     enrolledStudents: [],
     reviews: [],
-    averageRating: 0
+    averageRating: 3
   },
   {
     title: "UI/UX Design Fundamentals",
@@ -302,7 +302,7 @@ export const dummyCoursesPlayer = [
     ],
     enrolledStudents: [],
     reviews: [],
-    averageRating: 0
+    averageRating:4
   }
 
 ];
