@@ -96,14 +96,7 @@ const CoursePlayerPage = () => {
 
                     ))}
 
-                    {/* <div className='flex items-center gap-1 text-yellow-500 cursor-pointer'>
-                        {Array.from({ length: TotalStar }, (_, i) => {
-                            const value = i + 1;
-                            if (rating >= value) return <FaStar key={i} size={20} />
-                            else if (rating >= value - 0.5) return <FaStarHalfAlt key={i} size={20} />
-                            else return <FaRegStar key={i} size={20} />
-                        })}
-                    </div> */}
+                    
 
 
 

@@ -307,66 +307,103 @@ export const dummyCoursesPlayer = [
 
 ];
 
+// export const dummyCourses = [
+//   {
+//     _id: "course1",
+//     title: "Web Development Bootcamp",
+//     description: "Learn HTML, CSS, JavaScript, and React from scratch.",
+//     thumbnail: "/course_1.png",
+//     category: "Web Development",
+//     coursePrice: 499,
+//     discount: 20,
+//     instructor: {
+//       name: "John Doe",
+//       profileImg: "/instructor1.png"
+//     },
+//     averageRating: 4.5,
 
+//     // ✅ Added enrolledStudents
+//     enrolledStudents: [
+//       {
+//         _id: "student1",
+//         name: "Alice Johnson",
+//         email: "alice@example.com",
+//         profileImg: "/student1.png"
+//       },
+//       {
+//         _id: "student2",
+//         name: "Bob Smith",
+//         email: "bob@example.com",
+//         profileImg: "/student2.png"
+//       }
+//     ]
+//   },
 
+//   {
+//     _id: "course2",
+//     title: "Python for Data Science",
+//     description: "Master Python, Pandas, and data analysis techniques.",
+//     thumbnail: "/course_2.png",
+//     category: "Data Science",
+//     coursePrice: 799,
+//     discount: 25,
+//     instructor: {
+//       name: "Jane Smith",
+//       profileImg: "/instructor2.png"
+//     },
+//     averageRating: 4.7,
+
+//     // ✅ Added enrolledStudents
+//     enrolledStudents: [
+//       {
+//         _id: "student3",
+//         name: "Charlie Brown",
+//         email: "charlie@example.com",
+//         profileImg: "/student3.png"
+//       }
+//     ]
+//   }
+// ];
 
 export const dummyCourses = [
   {
-    _id: "course1",
-    title: "Web Development Bootcamp",
-    description: "Learn HTML, CSS, JavaScript, and React from scratch.",
-    thumbnail: "/course_1.png",
-    category: "Web Development",
-    coursePrice: 499,
-    discount: 20,
-    instructor: {
-      name: "John Doe",
-      profileImg: "/instructor1.png"
-    },
-    averageRating: 4.5,
-
-    // ✅ Added enrolledStudents
-    enrolledStudents: [
-      {
-        _id: "student1",
-        name: "Alice Johnson",
-        email: "alice@example.com",
-        profileImg: "/student1.png"
-      },
-      {
-        _id: "student2",
-        name: "Bob Smith",
-        email: "bob@example.com",
-        profileImg: "/student2.png"
-      }
-    ]
+    _id: "1",
+    title: "Cloud Computing Essentials",
+    instructor: "GreatStack",
+    averageRating: 5,
+    reviewsCount: 1,
+    coursePrice: 55.99,
+    thumbnail: course_1_thumbnail
   },
-
   {
-    _id: "course2",
-    title: "Python for Data Science",
-    description: "Master Python, Pandas, and data analysis techniques.",
-    thumbnail: "/course_2.png",
-    category: "Data Science",
-    coursePrice: 799,
-    discount: 25,
-    instructor: {
-      name: "Jane Smith",
-      profileImg: "/instructor2.png"
-    },
-    averageRating: 4.7,
-
-    // ✅ Added enrolledStudents
-    enrolledStudents: [
-      {
-        _id: "student3",
-        name: "Charlie Brown",
-        email: "charlie@example.com",
-        profileImg: "/student3.png"
-      }
-    ]
+    _id: "2",
+    title: "Advanced Python Programming",
+    instructor: "GreatStack",
+    averageRating: 4,
+    reviewsCount: 1,
+    coursePrice: 67.99,
+    thumbnail: course_2_thumbnail
+  },
+  {
+    _id: "3",
+    title: "Web Development Bootcamp",
+    instructor: "GreatStack",
+    averageRating: 5,
+    reviewsCount: 1,
+    coursePrice: 74.99,
+    thumbnail: course_3_thumbnail
+  },
+  {
+    _id: "4",
+    title: "Cybersecurity Basics",
+    instructor: "GreatStack",
+    averageRating: 4,
+    reviewsCount: 1,
+    coursePrice: 59.49,
+    thumbnail: course_4_thumbnail
   }
 ];
+
 
 
 
