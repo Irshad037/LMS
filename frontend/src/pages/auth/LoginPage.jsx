@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { MdOutlineMail, MdPassword } from 'react-icons/md';
 import { FaUser } from "react-icons/fa";
 import { Link } from 'react-router-dom'
-import useAuthStore from '../store/useAuthStore';
+import useAuthStore from '../../store/useAuthStore';
 import { Eye, EyeClosed, Loader2, } from "lucide-react";
 
 const LoginPage = () => {
