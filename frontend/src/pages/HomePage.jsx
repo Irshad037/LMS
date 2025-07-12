@@ -5,14 +5,12 @@ import paypal_logo from '../assets/paypal_logo.svg'
 import microsoft_logo from '../assets/microsoft_logo.svg'
 import adobe_logo from '../assets/adobe_logo.svg'
 import accenture_logo from '../assets/accenture_logo.svg'
-import course_1 from '../assets/course_1.png'
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { dummyCourses } from '../assets/assets'
 import { Link } from 'react-router-dom';
 
 const HomePage = () => {
   const TotalStar = 5;
-  let rating = 4
   return (
     <div className='flex flex-col items-center justify-center p-[130px] gap-5'>
 
@@ -51,11 +49,11 @@ const HomePage = () => {
         Discover our top-rated courses across various categories. From coding and design to business and wellness, our courses are crafted to deliver results.
       </p>
 
-      <div className='flex items-center justify-center gap-5 w-full'>
-        {dummyCourses.map((course, index) => (
-          <div key={index} className=' my-14 cursor-pointer flex items-center justify-center  flex-col bg-white w-64 h-[270px]   rounded-md'>
+      <div className='flex items-center justify-center gap-5 w-full my-14'>
+        {dummyCourses.slice(0, 4).map((course, index) => (
+          <div key={index} className='cursor-pointer flex shadow-xl items-center justify-center  flex-col bg-white w-[300px] h-[290px]   rounded-md'>
             <div className='flex-1 w-full'>
-              <img src={course.thumbnail} alt="" className='rounded-t-md' />
+              <img src={course.thumbnail} alt="" className='rounded-t-md h-[160px] w-full' />
             </div>
             <div className='flex-1 w-full p-2'>
               <h1 className='text-base font-bold'>{course.title}</h1>

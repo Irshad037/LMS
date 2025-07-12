@@ -13,6 +13,10 @@ import course_1_thumbnail from './course_1.png'
 import course_2_thumbnail from './course_2.png'
 import course_3_thumbnail from './course_3.png'
 import course_4_thumbnail from './course_4.png'
+import course_5_thumbnail from './course_5.png'
+import course_6_thumbnail from './course_6.png'
+import course_7_thumbnail from './course_7.png'
+import course_8_thumbnail from './course_8.png'
 import star from './rating_star.svg'
 import star_blank from './star_dull_icon.svg'
 import profile_img_1 from './profile_img_1.png'
@@ -365,6 +369,45 @@ export const dummyCoursesPlayer = [
 //   }
 // ];
 
+// export const dummyCourses = [
+//   {
+//     _id: "1",
+//     title: "Cloud Computing Essentials",
+//     instructor: "GreatStack",
+//     averageRating: 5,
+//     reviewsCount: 1,
+//     coursePrice: 55.99,
+//     thumbnail: course_1_thumbnail
+//   },
+//   {
+//     _id: "2",
+//     title: "Advanced Python Programming",
+//     instructor: "GreatStack",
+//     averageRating: 4,
+//     reviewsCount: 1,
+//     coursePrice: 67.99,
+//     thumbnail: course_2_thumbnail
+//   },
+//   {
+//     _id: "3",
+//     title: "Web Development Bootcamp",
+//     instructor: "GreatStack",
+//     averageRating: 5,
+//     reviewsCount: 1,
+//     coursePrice: 74.99,
+//     thumbnail: course_3_thumbnail
+//   },
+//   {
+//     _id: "4",
+//     title: "Cybersecurity Basics",
+//     instructor: "GreatStack",
+//     averageRating: 4,
+//     reviewsCount: 1,
+//     coursePrice: 59.49,
+//     thumbnail: course_4_thumbnail
+//   }
+// ];
+
 export const dummyCourses = [
   {
     _id: "1",
@@ -401,8 +444,45 @@ export const dummyCourses = [
     reviewsCount: 1,
     coursePrice: 59.49,
     thumbnail: course_4_thumbnail
-  }
+  },
+  {
+    _id: "5",
+    title: "Introduction to Data Science",
+    instructor: "CodeWithHarry",
+    averageRating: 4.5,
+    reviewsCount: 3,
+    coursePrice: 89.99,
+    thumbnail: course_5_thumbnail
+  },
+  {
+    _id: "6",
+    title: "Machine Learning with Python",
+    instructor: "TechWorld",
+    averageRating: 4.8,
+    reviewsCount: 7,
+    coursePrice: 95.00,
+    thumbnail: course_6_thumbnail
+  },
+  {
+    _id: "7",
+    title: "UI/UX Design Fundamentals",
+    instructor: "DesignLab",
+    averageRating: 4.3,
+    reviewsCount: 5,
+    coursePrice: 49.99,
+    thumbnail: course_7_thumbnail
+  },
+  {
+    _id: "8",
+    title: "React for Beginners",
+    instructor: "GreatStack",
+    averageRating: 4.9,
+    reviewsCount: 10,
+    coursePrice: 64.99,
+    thumbnail: course_8_thumbnail
+  },
 ];
+
 
 
 

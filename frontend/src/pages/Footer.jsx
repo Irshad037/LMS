@@ -56,7 +56,7 @@ const Footer = () => {
             <label className='w-[300px] bg-zinc-800  rounded-[7px] h-[43px] p-2 gap-1 border-2 flex items-center justify-between border-none '>
               <MdOutlineMail className='w-[25px]' />
               <input
-                type="email" placeholder='Email' className='flex-1  font-medium border-none outline-none bg-transparent'
+                type="email" placeholder='Email' className='flex-1 bg-transparent font-medium border-none outline-none '
                 name='email'
               />
             </label>
