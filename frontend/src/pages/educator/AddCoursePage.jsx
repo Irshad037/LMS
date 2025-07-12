@@ -59,6 +59,7 @@ const AddCoursePage = () => {
               onClick={() => imgRef.current.click()}
             />
           </div>
+          
           {img &&
             <div className='relative bg-gray-800 w-60 mx-auto'>
               <IoCloseSharp

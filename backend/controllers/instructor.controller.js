@@ -131,8 +131,8 @@ export const deleteSectionFromCourse = async (req, res) => {
 
 export const addVideoToSection = async (req, res) => {
     try {
-        const { courseId } = req.params;
-        const { sectionTitle, title } = req.body;
+        const { courseId, sectionTitle } = req.params;
+        const { title } = req.body;
         const videoUrl = req.file?.path;
         const publicId = req.file?.filename;
 

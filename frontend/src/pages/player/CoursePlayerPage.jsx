@@ -1,21 +1,29 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { TbPlayerPlayFilled } from "react-icons/tb";
 import { dummyCoursesPlayer } from '../../assets/assets'
+import cross_icon from '../../assets/cross_icon.svg'
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { MdDeleteForever } from "react-icons/md";
+import file_upload_icon from '../../assets/file_upload_icon.svg'
+import { IoCloseSharp } from "react-icons/io5";
 
 const CoursePlayerPage = () => {
-
+    const [createSeaction, setCreateSection] = useState(false);
     const [hoveredStar, setHoveredStar] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
     const [openSection, setOpenSection] = useState({})
     const [comment, setComment] = useState("");
+    const [video, setVideo] = useState(null);
+    const [videoURL, setVideoURL] = useState(null);
+    const videoRef = useRef(null);
+
 
     const handleClick = (value) => {
         setSelectedRating(value);
     };
     const handleComment = () => {
+
         if (!selectedRating) {
             alert("Please provide Rating");
             return;
@@ -35,16 +43,56 @@ const CoursePlayerPage = () => {
         }));
     }
 
+    const handleCreateSection = (e) => {
+        e.preventDefault();
+        setCreateSection(!createSeaction)
+    }
+
+    const handleVideoChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === "video/mp4") {
+            setVideo(file);
+            setVideoURL(URL.createObjectURL(file)); // blob URL for preview
+        } else {
+            alert("Please upload a .mp4 file");
+        }
+    };
+
+
 
     return (
         <div className='px-[130px] my-9 flex items-center flex-col'>
+
             <div className='flex items-center justify-between gap-10'>
                 <div className='flex items-center flex-col  flex-1'>
 
                     <div className=' mb-2 w-full flex items-center justify-between'>
                         <h1 className='text-2xl font-bold '>Course Structure</h1>
-                        <button className='btn btn-primary '>Create Section</button>
+                        <button
+                            onClick={() => setCreateSection(!createSeaction)}
+                            className='btn btn-primary '
+                        >
+                            Create Section
+                        </button>
                     </div>
+
+                    {createSeaction &&
+                        <form onSubmit={handleCreateSection} className='w-[400px] h-[220px] shadow-md shadow-black bg-white mt-10 rounded-md'>
+
+                            <img src={cross_icon} alt="close" className='mt-4 ml-4 w-4 cursor-pointer'
+                                onClick={() => setCreateSection(!createSeaction)}
+                            />
+                            <div className='w-full p-6 flex items-center flex-col gap-4'>
+                                <h2 className="text-xl font-bold ">Section Title</h2>
+                                <input
+                                    type="text"
+                                    className='w-full border-zinc-700 p-2 border rounded-[4px]'
+                                    placeholder='Type here'
+                                />
+                                <button oncli className='btn btn-primary w-full '>Add</button>
+                            </div>
+                        </form>
+                    }
 
                     {dummyCoursesPlayer[0].content.map((section, index) => (
 
@@ -87,17 +135,84 @@ const CoursePlayerPage = () => {
                                             </div>
 
 
+
+
+
                                         </div>
                                     ))}
                                 </>}
                             </div>
+
+
+
                         </div>
 
 
                     ))}
 
-                    
 
+                    <div className="flex items-center justify-center w-[400px] bg-white my-10">
+                        <form className="w-full rounded-xl p-6 shadow bg-white flex flex-col gap-6">
+
+                            {/* Video Title Input */}
+                            <div>
+                                <h2 className="text-xl font-bold mb-1 text-center">Video Title</h2>
+                                <input
+                                    type="text"
+                                    className="w-full border border-zinc-300 p-2 rounded-md focus:outline-none focus:border-zinc-700"
+                                    placeholder="Type here"
+                                />
+                            </div>
+
+                            {/* Video Upload Section */}
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-xl text-zinc-600 font-semibold">Add Video</h3>
+                                    <div
+                                        className="w-10 h-10 bg-blue-700 flex items-center justify-center rounded-md cursor-pointer hover:bg-blue-800"
+                                        onClick={() => videoRef.current.click()}
+                                    >
+                                        <img src={file_upload_icon} alt="Upload" className="w-6 h-6" />
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="video/mp4"
+                                        hidden
+                                        ref={videoRef}
+                                        onChange={handleVideoChange}
+                                    />
+                                </div>
+
+                                {/* Preview if video is selected */}
+                                {videoURL && (
+                                    <div className="relative bg-gray-800 w-full rounded overflow-hidden ">
+                                        <IoCloseSharp
+                                            className="absolute top-2 right-2 text-white bg-gray-700 rounded-full w-6 h-6 p-1 cursor-pointer z-10 pointer-events-auto"
+                                            onClick={() => {
+                                                setVideo(null);
+                                                setVideoURL(null);
+                                                videoRef.current.value = null;
+                                            }}
+                                        />
+                                        <video
+                                            src={videoURL}
+                                            controls
+                                            className="w-full aspect-video object-contain rounded"
+                                        />
+
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                className="btn bg-zinc-800 hover:bg-black text-white px-4 py-2 rounded-md"
+                            >
+                                Add
+                            </button>
+                        </form>
+                    </div>
 
 
 
