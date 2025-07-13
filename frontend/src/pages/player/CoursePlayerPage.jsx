@@ -10,9 +10,9 @@ import { IoCloseSharp } from "react-icons/io5";
 
 const CoursePlayerPage = () => {
     const [createSeaction, setCreateSection] = useState(false);
+    const [openSection, setOpenSection] = useState({})
     const [hoveredStar, setHoveredStar] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
-    const [openSection, setOpenSection] = useState({})
     const [comment, setComment] = useState("");
     const [video, setVideo] = useState(null);
     const [videoURL, setVideoURL] = useState(null);

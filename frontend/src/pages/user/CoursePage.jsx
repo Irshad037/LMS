@@ -26,7 +26,7 @@ const CoursePage = () => {
 
       <div className='flex flex-wrap gap-4 items-center my-14 '>
         {dummyCourses.map((course, index) => (
-          <div key={index} className=' 
+          <Link to={'/purchase'} key={index} className=' 
             cursor-pointer flex shadow-xl items-center justify-center hover:-translate-y-6 hover:shadow-zinc-800 hover:border-2 transition-all duration-300 flex-col bg-white w-[300px] h-[290px]   rounded-md'
           >
             <div className='flex-1 w-full'>
@@ -48,7 +48,7 @@ const CoursePage = () => {
 
               <p>${course.coursePrice}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

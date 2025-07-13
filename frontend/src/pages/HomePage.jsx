@@ -10,7 +10,6 @@ import { dummyCourses } from '../assets/assets'
 import { Link } from 'react-router-dom';
 
 const HomePage = () => {
-  const TotalStar = 5;
   return (
     <div className='flex flex-col items-center justify-center p-[130px] gap-5'>
 
@@ -51,7 +50,7 @@ const HomePage = () => {
 
       <div className='flex items-center justify-center gap-5 w-full my-14'>
         {dummyCourses.slice(0, 4).map((course, index) => (
-          <div key={index} className='cursor-pointer flex shadow-xl items-center justify-center  flex-col bg-white w-[300px] h-[290px]   rounded-md'>
+          <Link to={'/purchase'} key={index} className='cursor-pointer flex shadow-xl items-center justify-center  flex-col bg-white w-[300px] h-[290px]   rounded-md'>
             <div className='flex-1 w-full'>
               <img src={course.thumbnail} alt="" className='rounded-t-md h-[160px] w-full' />
             </div>
@@ -61,7 +60,7 @@ const HomePage = () => {
 
               <div className='flex items-center gap-1 text-yellow-500 cursor-pointer'>
                 <p className='text-black mr-1'>{course.averageRating}</p>
-                {Array.from({ length: TotalStar }, (_, i) => {
+                {Array.from({ length: 5 }, (_, i) => {
                   const value = i + 1;
                   if (course.averageRating >= value) return <FaStar key={i} size={12} />
                   else if (course.averageRating >= value - 0.5) return <FaStarHalfAlt key={i} size={13} />
@@ -71,7 +70,7 @@ const HomePage = () => {
 
               <p>${course.coursePrice}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
