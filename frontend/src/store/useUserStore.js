@@ -13,10 +13,12 @@ export const useUserStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('/user/request', data);
       toast.success("Request sent successfully");
+      return true; 
     } catch (error) {
       const errMsg = error?.response?.data?.error || "Request failed";
       console.error("requestForInstructor error:", errMsg);
       toast.error(errMsg);
+      return false; 
     } finally {
       set({ isRequesting: false });
     }

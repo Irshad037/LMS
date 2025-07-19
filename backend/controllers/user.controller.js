@@ -24,6 +24,9 @@ export const requestInstructor = async (req, res) => {
       bio: bio.trim(),
     });
 
+    user.isApplyForInstructor = true; 
+    await user.save();
+
     res.status(201).json({ message: "Request sent", request });
   } catch (error) {
     console.error("Error in requestInstructor controller:", error.message);

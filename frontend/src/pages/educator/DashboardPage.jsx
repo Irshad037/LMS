@@ -10,7 +10,6 @@ import useAuthStore from '../../store/useAuthStore'
 const DashboardPage = () => {
   const {authUser} = useAuthStore();
   const { requestStatus, instructorRequest } = useUserStore();
-  console.log(instructorRequest);
   
   return (
     <div className=' flex flex-col py-[100px] px-[130px]'>

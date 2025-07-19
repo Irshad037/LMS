@@ -4,7 +4,7 @@ import { useUserStore } from '../../store/useUserStore'
 import useAuthStore from '../../store/useAuthStore'
 
 const BecomeEducatorPage = () => {
-  const {authUser} = useAuthStore();
+  const { authUser } = useAuthStore();
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: authUser.name,
@@ -12,17 +12,14 @@ const BecomeEducatorPage = () => {
     bio: ''
   })
 
- const {requestForInstructor, isRequesting,instructorRequest,requestStatus} = useUserStore();
-
-  useEffect(()=>{
-    requestStatus();
-  }, []);
+  const { requestForInstructor, isRequesting, instructorRequest, requestStatus } = useUserStore();
 
   useEffect(() => {
-  if (instructorRequest && instructorRequest.status !== 'rejected') {
-    navigate('/educator/dashboard');
-  }
-}, [instructorRequest]);
+    if (authUser && authUser.isApplyForInstructor) {
+      requestStatus();
+    }
+  }, [authUser]);
+
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -31,12 +28,16 @@ const BecomeEducatorPage = () => {
     }))
   }
 
-  const handleSubmit = async(e) => {
-    e.preventDefault()
-    await requestForInstructor(formData);
-    console.log('Educator application submitted:', formData)
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const success = await requestForInstructor(formData);
+
+  if (success) {
+    console.log('Educator application submitted:', formData);
     setFormData({ name: '', email: '', bio: '' });
+    navigate('/educator/dashboard'); // ✅ Navigate only on success
   }
+};
 
 
   return (

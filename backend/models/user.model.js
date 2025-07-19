@@ -30,7 +30,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['student', 'instructor', 'admin'],
       default: 'student'
-    }
+    },
+    isApplyForInstructor:{type : Boolean, default: false},
   },
   { timestamps: true }
 );

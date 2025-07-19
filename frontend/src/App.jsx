@@ -25,14 +25,19 @@ import { useUserStore } from './store/useUserStore';
 
 const App = () => {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
-  const {requestStatus, instructorRequest} = useUserStore();
+  const { requestStatus, instructorRequest } = useUserStore();
 
   useEffect(() => {
     checkAuth();
-    if (authUser) {
+  }, []);
+
+
+  useEffect(() => {
+    if (authUser && authUser.isApplyForInstructor) {
       requestStatus();
     }
-  }, [checkAuth]);
+  }, [authUser]);
+
 
 
   useEffect(() => {
@@ -58,16 +63,16 @@ const App = () => {
         <Route path='/' element={authUser ? <HomePage /> : <Navigate to={'/login'} />} />
         <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to={'/'} />} />
         <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to={'/'} />} />
-        <Route path='/become-educator' element={authUser ? <BecomeEducatorPage /> : <Navigate to={'/login'} />} />
+        <Route path='/become-educator' element={authUser ? authUser?.isApplyForInstructor?<Navigate to={"/educator/dashboard"}/>:<BecomeEducatorPage /> : <Navigate to={'/login'} />} />
         <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={'/login'} />} />
         <Route path='/educator' element={authUser ? <ProfilePage /> : <Navigate to={'/login'} />} />
-        <Route path='/player/:courseId' element={authUser ? <CoursePlayerPage/> : <Navigate to={'/login'} />} />
-        <Route path='/my-enrollments' element={authUser ? <MyEnrollmentPage/> : <Navigate to={'/login'} />} />
-        <Route path='/purchase' element={authUser ? <PurchasePage/> : <Navigate to={'/login'} />} />
-        <Route path='/all-courses' element={<CoursePage/>} />
+        <Route path='/player/:courseId' element={authUser ? <CoursePlayerPage /> : <Navigate to={'/login'} />} />
+        <Route path='/my-enrollments' element={authUser ? <MyEnrollmentPage /> : <Navigate to={'/login'} />} />
+        <Route path='/purchase' element={authUser ? <PurchasePage /> : <Navigate to={'/login'} />} />
+        <Route path='/all-courses' element={<CoursePage />} />
 
 
-        <Route path="/educator" element={(authUser?.role === 'instructor' || instructorRequest ) ? <EducatorLayout /> : <Navigate to="/" />}>
+        <Route path="/educator" element={(authUser?.role === 'instructor' || instructorRequest) ? <EducatorLayout /> : <Navigate to="/" />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="add-course" element={<AddCoursePage />} />
           <Route path="my-courses" element={<MyCoursePage />} />
