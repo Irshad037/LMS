@@ -61,7 +61,7 @@ const CoursePlayerPage = () => {
 
 
     return (
-        <div className='px-[130px] my-9 flex items-center flex-col'>
+        <div className='px-[130px] py-[70px] my-9 flex items-center flex-col'>
 
             <div className='flex items-center justify-between gap-10'>
                 <div className='flex items-center flex-col  flex-1'>

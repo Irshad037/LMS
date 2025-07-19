@@ -26,7 +26,7 @@ const MyEnrollementPage = () => {
 
         {
           dummyCourses.map((course, index) => (
-            <div className='flex items-center justify-between p-4 mt-6 border-b border-zinc-500'>
+            <div className='flex items-center justify-between p-4 border-b border-zinc-500'>
 
               <Link to={`/player/${course._id}`} className='flex basis-[46%] cursor-pointer gap-2 w-full'>
                 <img src={course.thumbnail} alt="" className='w-24 ' />

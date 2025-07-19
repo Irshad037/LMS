@@ -4,7 +4,7 @@ import EducatoreSideBar from './EducatoreSideBar'
 
 const EducatorLayout = () => {
     return (
-        <div className='flex'>
+        <div className='flex h-full'>
             <EducatoreSideBar />
             <main className="flex-1">
                 <Outlet />

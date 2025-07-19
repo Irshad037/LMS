@@ -5,7 +5,7 @@ import { dummyCourses } from '../../assets/assets'
 
 const StudentEnrolledPage = () => {
   return (
-    <div className=' p-6'>
+    <div className=' p-[70px]'>
       <div className='w-full bg-white shadow rounded-md border-b border-zinc-500'>
 
         <div className=' flex items-center justify-between p-4 mt-6 border-b border-zinc-500'>
@@ -18,7 +18,7 @@ const StudentEnrolledPage = () => {
 
         {
           dummyCourses.map((course,idx) => (
-            <div key={idx} className='flex items-center justify-between p-4 mt-6 border-b border-zinc-500'>
+            <div key={idx} className='flex items-center justify-between p-4 border-b border-zinc-500'>
 
               <p className='basis-[5%]'>{idx+1}</p>
               <div className='flex items-center gap-3 basis-[31%]'>

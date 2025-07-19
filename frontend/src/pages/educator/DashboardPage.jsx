@@ -7,8 +7,11 @@ import profile_img_1 from '../../assets/profile_img_1.png'
 
 const DashboardPage = () => {
   return (
-    <div className=' flex flex-col py-[100px]'>
-      <div className='flex items-center px-[130px] gap-4 text-zinc-600'>
+    <div className=' flex flex-col py-[100px] px-[130px]'>
+
+
+
+      <div className='flex items-center  justify-center gap-4 text-zinc-600'>
 
         <div className='flex items-center p-5 w-60 bg-white border border-blue-200 shadow-xl rounded-md gap-2'>
           <img src={patients_icon} alt="person" />
@@ -37,24 +40,26 @@ const DashboardPage = () => {
       </div>
 
 
-      <div className='flex flex-col p-[130px]'>
+      <div className='flex flex-col pt-[80px] w-full'>
         <h1 className='text-3xl font-bold'>Latest Enrollments</h1>
 
-        <div className='bg-white w-[720px] border border-zinc-400 rounded-md shadow-xl m-6 mt-6 '>
+        <div className='bg-white  border border-zinc-400 rounded-md shadow-xl m-6 mt-6 '>
           <div className=' flex items-center justify-between p-4 border-b border-zinc-400 w-full font-extrabold text-xl'>
-            <h1 className=' font-semibold '>#</h1>
+            <h1 className=' font-semibold px-1'>#</h1>
             <h1 className=' font-semibold basis-[45%]  '>Student name</h1>
             <h1 className=' font-semibold basis-[45%]'>Course Title</h1>
           </div>
 
-          {
-            dummyCourses.slice(0,2).map((course, idx) => (
-              <div key={idx} className='flex items-center justify-between p-2 mt-6 border-b border-zinc-500'>
 
-                <p className=''>{idx + 1}</p>
+
+          {
+            dummyCourses.slice(0, 2).map((course, idx) => (
+              <div key={idx} className='flex items-center justify-between p-4 border-b border-zinc-500'>
+
+                <p className='p-1'>{idx + 1}</p>
                 <div className='flex items-center gap-3 basis-[45%]'>
                   <img src={profile_img_1} alt="" className='w-12 rounded-full' />
-                  <h1>student{idx+1}</h1>
+                  <h1>student{idx + 1}</h1>
                 </div>
 
                 <div className='basis-[45%]'>{course.title}</div>
@@ -62,6 +67,40 @@ const DashboardPage = () => {
             ))
           }
         </div>
+
+      </div>
+
+
+      <div className=" my-20 p-6 bg-white  rounded-xl shadow-md">
+        <h1 className="text-2xl font-bold mb-4 text-center">Instructor Request Status</h1>
+
+        <div className="flex items-center justify-between gap-4 mb-4 bg-slate-200 px-6 py-3 rounded-md">
+          <div className='flex items-center gap-3'>
+
+            <div className="bg-zinc-700 w-[60px] h-[60px] rounded-full flex items-center justify-center">
+              <img
+                src={profile_img_1 || user_icon}
+                alt="User"
+                className="w-[57px] h-[57px] object-cover bg-white rounded-full cursor-pointer"
+              />
+            </div>
+            <div>
+              <p className="font-bold text-xl">name</p>
+              <p className="text-gray-500 text-base">user@email.com</p>
+            </div>
+          </div>
+
+
+          <div className=" p-4 flex items-center gap-5">
+            <div className='flex items-center gap-1'>
+              <p className="font-semibold text-lg">Status: <span className="text-blue-600 capitalize">pending</span></p>
+              | <p className="text-sm  text-gray-600">Submitted on: 21/06/2025</p>
+            </div>
+
+            <button className='btn text-lg px-8 bg-red-700 text-white'> Delete Request</button>
+          </div>
+        </div>
+
 
       </div>
 

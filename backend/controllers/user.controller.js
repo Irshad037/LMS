@@ -32,24 +32,35 @@ export const requestInstructor = async (req, res) => {
 };
 
 
-export const getStatus = async (req, res)=>{
+export const getStatus = async (req, res) => {
+  try {
     const userId = req.user._id;
-    try {
-        const user = await User.findById(userId);
-        if(!user) return res.status(404).json({error: "User not found"});
 
-        const request = await InstructorRequest.findOne({user:user._id}).populate("user", "name email profileImg");;
-        if (!request) {
-            return res.status(404).json({ error: "Request not found" });
-        }
-
-        res.status(200).json(request);
-
-    } catch (error) {
-        console.log("Error in getStatus controller", error.message);
-        res.status(500).json({error: "Internal server error"})
+    // 1. Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-}
+
+    // 2. Find instructor request with user populated
+    const request = await InstructorRequest.findOne({ user: userId }).populate(
+      "user",
+      "name email profileImg"
+    );
+
+    if (!request) {
+      return res.status(404).json({ error: "Instructor request not found" });
+    }
+
+    // 3. Success
+    return res.status(200).json({ success: true, data: request });
+
+  } catch (error) {
+    console.error("Error in getStatus controller:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 export const approveInstructor = async (req, res) => {
     try {
