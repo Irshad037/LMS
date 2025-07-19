@@ -10,11 +10,11 @@ import useAuthStore from '../../store/useAuthStore'
 const DashboardPage = () => {
   const {authUser} = useAuthStore();
   const { requestStatus, instructorRequest } = useUserStore();
-  
+
   return (
     <div className=' flex flex-col py-[100px] px-[130px]'>
 
-      {instructorRequest.stutus == "approved" ||authUser.role === 'instructor'  &&
+      {authUser.role === 'instructor'  &&
         <>
           <div className='flex items-center  justify-center gap-4 text-zinc-600'>
 
@@ -86,22 +86,24 @@ const DashboardPage = () => {
 
             <div className="bg-zinc-700 w-[60px] h-[60px] rounded-full flex items-center justify-center">
               <img
-                src={profile_img_1 || user_icon}
+                src={authUser.profileImg || user_icon}
                 alt="User"
                 className="w-[57px] h-[57px] object-cover bg-white rounded-full cursor-pointer"
               />
             </div>
             <div>
-              <p className="font-bold text-xl">name</p>
-              <p className="text-gray-500 text-base">user@email.com</p>
+              <p className="font-bold text-xl">{authUser.name}</p>
+              <p className="text-gray-500 text-base">{authUser.email}</p>
             </div>
           </div>
 
 
           <div className=" p-4 flex items-center gap-5">
             <div className='flex items-center gap-1'>
-              <p className="font-semibold text-lg">Status: <span className="text-blue-600 capitalize">pending</span></p>
-              | <p className="text-sm  text-gray-600">Submitted on: 21/06/2025</p>
+              <p className="font-semibold text-lg">Status: 
+                <span className={`capitalize ${instructorRequest.status== "pending"?'text-blue-600':'text-green-700' }`}>{instructorRequest.status}</span>
+              </p>
+              | <p className="text-sm  text-gray-600">Submitted on: {new Date(instructorRequest.createdAt).toLocaleDateString()}</p>
             </div>
 
             <button className='btn text-lg px-8 bg-red-700 text-white'> Delete Request</button>

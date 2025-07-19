@@ -16,12 +16,13 @@ const navItems = [
 const EducatorSidebar = () => {
 
   const { requestStatus, instructorRequest } = useUserStore();
+  const isApproved = instructorRequest?.status === 'approved';
 
   return (
     <div className="h- flex flex-col bg-white w-64 border-r-2 shadow border-zinc-300 px-6 py-8 gap-5">
 
       {
-        instructorRequest.status !== 'approved' &&
+        !isApproved &&
         <NavLink
           key="Dashboard"
           to={'/educator/dashboard'}
@@ -37,7 +38,7 @@ const EducatorSidebar = () => {
 
 
       {
-        instructorRequest.status === 'approved' &&
+        isApproved &&
         <>
           {navItems.map(({ name, icon, path }) => (
             <NavLink

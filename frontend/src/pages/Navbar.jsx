@@ -19,16 +19,17 @@ const Navbar = () => {
 
         {authUser && (
           <>
-            {authUser.role != "instructor" && (
-              <>
-                <Link to={'/become-educator'} className='text-[18px] link link-hover text-neutral-600 font-normal'>
-                  Become Educator
-                </Link>
-                |
-              </>
-            )}
+            {(authUser.role != "instructor"  && !authUser.isApplyForInstructor) && 
+            (
+                <>
+                  <Link to={'/become-educator'} className='text-[18px] link link-hover text-neutral-600 font-normal'>
+                    Become Educator
+                  </Link>
+                  |
+                </>
+              )}
 
-            {authUser.role == "instructor" && (
+            {(authUser.role == "instructor" || authUser.isApplyForInstructor) && (
               <>
                 <Link to="/educator/dashboard" className="text-[18px] link link-hover text-neutral-600 font-normal">
                   Educator Dashboard
