@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '../../store/useUserStore'
 import useAuthStore from '../../store/useAuthStore'
@@ -12,6 +12,18 @@ const BecomeEducatorPage = () => {
     bio: ''
   })
 
+ const {requestForInstructor, isRequesting,instructorRequest,requestStatus} = useUserStore();
+
+  useEffect(()=>{
+    requestStatus();
+  }, []);
+
+  useEffect(() => {
+  if (instructorRequest && instructorRequest.status !== 'rejected') {
+    navigate('/educator/dashboard');
+  }
+}, [instructorRequest]);
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -19,14 +31,13 @@ const BecomeEducatorPage = () => {
     }))
   }
 
-  const {requestForInstructor, isRequesting} = useUserStore();
-
   const handleSubmit = async(e) => {
     e.preventDefault()
     await requestForInstructor(formData);
     console.log('Educator application submitted:', formData)
     setFormData({ name: '', email: '', bio: '' });
   }
+
 
   return (
     <div >
@@ -97,12 +108,6 @@ const BecomeEducatorPage = () => {
           </form>
         </div>
       </section>
-
-      {/* Dashboard Link */}
-      <div className="text-center mt-12">
-        <p className="text-lg">Already have an educator account?</p>
-        <button onClick={() => navigate('/dashboard')} className="link link-primary text-base font-medium">Go to Dashboard</button>
-      </div>
     </div>
   )
 }

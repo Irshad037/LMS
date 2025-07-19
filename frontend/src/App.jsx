@@ -21,12 +21,17 @@ import CoursePlayerPage from './pages/player/CoursePlayerPage';
 import MyEnrollmentPage from './pages/user/MyEnrollmentPage';
 import CoursePage from './pages/user/CoursePage';
 import PurchasePage from './pages/user/PurchasePage';
+import { useUserStore } from './store/useUserStore';
 
 const App = () => {
   const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+  const {requestStatus, instructorRequest} = useUserStore();
 
   useEffect(() => {
     checkAuth();
+    if (authUser) {
+      requestStatus();
+    }
   }, [checkAuth]);
 
 
@@ -62,7 +67,7 @@ const App = () => {
         <Route path='/all-courses' element={<CoursePage/>} />
 
 
-        <Route path="/educator" element={authUser?.role === 'instructor' ? <EducatorLayout /> : <Navigate to="/" />}>
+        <Route path="/educator" element={(authUser?.role === 'instructor' || instructorRequest ) ? <EducatorLayout /> : <Navigate to="/" />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="add-course" element={<AddCoursePage />} />
           <Route path="my-courses" element={<MyCoursePage />} />
