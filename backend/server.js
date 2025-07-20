@@ -17,8 +17,8 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json()); // For application/json
-app.use(express.urlencoded({ extended: true })); // For x-www-form-urlencoded
+app.use(express.json({ limit: '10mb' }));// For application/json
+app.use(express.urlencoded({ limit: '10mb', extended: true }));// For x-www-form-urlencoded
 app.use(cookieParser());  // ✅ Use cookie-parser middleware
 
 app.use('/api/auth',authRoutes);

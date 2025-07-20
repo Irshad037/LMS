@@ -1,11 +1,12 @@
 import React from 'react'
+import useAuthStore from '../../store/useAuthStore'
+import { dummyCourses } from '../../assets/assets'
+import { useUserStore } from '../../store/useUserStore'
 import appointments_icon from '../../assets/appointments_icon.svg'
 import patients_icon from '../../assets/patients_icon.svg'
 import earning_icon from '../../assets/earning_icon.svg'
-import { dummyCourses } from '../../assets/assets'
 import profile_img_1 from '../../assets/profile_img_1.png'
-import { useUserStore } from '../../store/useUserStore'
-import useAuthStore from '../../store/useAuthStore'
+import user_icon from '../../assets/user_icon.svg';
 
 const DashboardPage = () => {
   const { authUser } = useAuthStore();
@@ -121,11 +122,10 @@ const DashboardPage = () => {
               {
                 instructorRequest?.status == "pending" &&
                 <button className='btn text-lg px-8 bg-red-700 text-white'
-                  onClick={async() => {
+                  onClick={() => {
                     const confirmDelete = window.confirm("Are you sure you want to delete this request?");
                     if (confirmDelete) {
-                      await deleteRequest({ requestId: instructorRequest._id });
-                      await requestStatus(); 
+                      deleteRequest({ requestId: instructorRequest._id });
                     }
                   }}
                 >
