@@ -14,11 +14,13 @@ const BecomeEducatorPage = () => {
 
   const { requestForInstructor, isRequesting, instructorRequest, requestStatus } = useUserStore();
 
+
+
   useEffect(() => {
-    if (authUser && authUser.isApplyForInstructor) {
-      requestStatus();
+    if (instructorRequest) {
+      console.log("Updated:", instructorRequest);
     }
-  }, [authUser]);
+  }, [instructorRequest]);
 
 
   const handleChange = (e) => {
@@ -28,16 +30,18 @@ const BecomeEducatorPage = () => {
     }))
   }
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const success = await requestForInstructor(formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const success = await requestForInstructor(formData);
 
-  if (success) {
-    console.log('Educator application submitted:', formData);
-    setFormData({ name: '', email: '', bio: '' });
-    navigate('/educator/dashboard'); // ✅ Navigate only on success
-  }
-};
+    if (success) {
+      console.log('Educator application submitted:', formData);
+      setFormData({ name: '', email: '', bio: '' });
+      await requestStatus();
+      navigate('/educator/dashboard'); // ✅ Navigate only on success
+    }
+  };
+
 
 
   return (

@@ -8,13 +8,13 @@ import { useUserStore } from '../../store/useUserStore'
 import useAuthStore from '../../store/useAuthStore'
 
 const DashboardPage = () => {
-  const {authUser} = useAuthStore();
-  const { requestStatus, instructorRequest } = useUserStore();
+  const { authUser } = useAuthStore();
+  const { requestStatus, instructorRequest, deleteRequest } = useUserStore();
 
   return (
     <div className=' flex flex-col py-[100px] px-[130px]'>
 
-      {authUser.role === 'instructor'  &&
+      {authUser.role === 'instructor' &&
         <>
           <div className='flex items-center  justify-center gap-4 text-zinc-600'>
 
@@ -77,41 +77,69 @@ const DashboardPage = () => {
         </>
       }
 
+      {
+        instructorRequest &&
+        <div className="  p-6 bg-white  rounded-xl shadow-md">
+          <h1 className="text-2xl font-bold mb-4 text-center">Instructor Request Status</h1>
 
-      <div className="  p-6 bg-white  rounded-xl shadow-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Instructor Request Status</h1>
+          <div className="flex items-center justify-between gap-4 mb-4 bg-slate-200 px-6 py-3 rounded-md">
+            <div className='flex items-center gap-3'>
 
-        <div className="flex items-center justify-between gap-4 mb-4 bg-slate-200 px-6 py-3 rounded-md">
-          <div className='flex items-center gap-3'>
-
-            <div className="bg-zinc-700 w-[60px] h-[60px] rounded-full flex items-center justify-center">
-              <img
-                src={authUser.profileImg || user_icon}
-                alt="User"
-                className="w-[57px] h-[57px] object-cover bg-white rounded-full cursor-pointer"
-              />
+              <div className="bg-zinc-700 w-[60px] h-[60px] rounded-full flex items-center justify-center">
+                <img
+                  src={authUser.profileImg || user_icon}
+                  alt="User"
+                  className="w-[57px] h-[57px] object-cover bg-white rounded-full cursor-pointer"
+                />
+              </div>
+              <div>
+                <p className="font-bold text-xl">{authUser.name}</p>
+                <p className="text-gray-500 text-base">{authUser.email}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-bold text-xl">{authUser.name}</p>
-              <p className="text-gray-500 text-base">{authUser.email}</p>
+
+
+            <div className=" p-4 flex items-center gap-5">
+              <div className='flex items-center gap-1'>
+                <p className="font-semibold text-lg">Status:
+                  {instructorRequest && (
+                    <span
+                      className={`capitalize ${instructorRequest.status === "pending"
+                        ? "text-blue-600"
+                        : instructorRequest.status === "rejected"
+                          ? "text-red-600"
+                          : "text-green-700"
+                        }`}
+                    >
+                      {instructorRequest.status.replace(/^\w/, c => c.toUpperCase())}
+                    </span>
+                  )}
+                </p>
+                | <p className="text-sm  text-gray-600">Submitted on: {new Date(instructorRequest?.createdAt).toLocaleDateString()}</p>
+              </div>
+
+              {
+                instructorRequest?.status == "pending" &&
+                <button className='btn text-lg px-8 bg-red-700 text-white'
+                  onClick={async() => {
+                    const confirmDelete = window.confirm("Are you sure you want to delete this request?");
+                    if (confirmDelete) {
+                      await deleteRequest({ requestId: instructorRequest._id });
+                      await requestStatus(); 
+                    }
+                  }}
+                >
+                  Delete Request
+                </button>
+              }
+
             </div>
           </div>
 
 
-          <div className=" p-4 flex items-center gap-5">
-            <div className='flex items-center gap-1'>
-              <p className="font-semibold text-lg">Status: 
-                <span className={`capitalize ${instructorRequest.status== "pending"?'text-blue-600':'text-green-700' }`}>{instructorRequest.status}</span>
-              </p>
-              | <p className="text-sm  text-gray-600">Submitted on: {new Date(instructorRequest.createdAt).toLocaleDateString()}</p>
-            </div>
-
-            <button className='btn text-lg px-8 bg-red-700 text-white'> Delete Request</button>
-          </div>
         </div>
 
-
-      </div>
+      }
 
     </div>
   )

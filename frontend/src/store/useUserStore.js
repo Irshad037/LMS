@@ -6,6 +6,7 @@ export const useUserStore = create((set, get) => ({
   instructorRequest: null,
   isRequesting: false,
   isGettingStatus: false,
+  isDeletingRequest: false,
 
   // Send instructor request
   requestForInstructor: async (data) => {
@@ -13,14 +14,31 @@ export const useUserStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('/user/request', data);
       toast.success("Request sent successfully");
-      return true; 
+      return true;
     } catch (error) {
       const errMsg = error?.response?.data?.error || "Request failed";
       console.error("requestForInstructor error:", errMsg);
       toast.error(errMsg);
-      return false; 
+      return false;
     } finally {
       set({ isRequesting: false });
+    }
+  },
+
+  deleteRequest: async (data) => {
+    set({ isDeletingRequest: true });
+    try {
+      const res = await axiosInstance.delete("/user/delete-request", {
+        data,
+      });
+      toast.success("Request deleted successfully");
+      set({ instructorRequest: null }); // ✅ Clear state after delete
+    } catch (error) {
+      const errMsg = error?.response?.data?.error || "Delete failed";
+      console.error("deleteRequest error:", errMsg);
+      toast.error(errMsg);
+    } finally {
+      set({ isDeletingRequest: false });
     }
   },
 
