@@ -6,62 +6,87 @@ import { v2 as cloudinary } from 'cloudinary';
 
 
 export const requestInstructor = async (req, res) => {
-  try {
-    const { email, bio } = req.body;
+    try {
+        const { email, bio } = req.body;
 
-    if (!email || !bio) return res.status(400).json({ error: "Email and Bio are required" });
+        if (!email || !bio) return res.status(400).json({ error: "Email and Bio are required" });
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found" });
 
-    const existing = await InstructorRequest.findOne({ user: user._id });
-    if (existing) {
-      return res.status(400).json({ error: "You have already requested." });
+        const existing = await InstructorRequest.findOne({ user: user._id });
+        if (existing) {
+            return res.status(400).json({ error: "You have already requested." });
+        }
+
+        const request = await InstructorRequest.create({
+            user: user._id,
+            bio: bio.trim(),
+        });
+
+        user.isApplyForInstructor = true;
+        await user.save();
+
+        res.status(201).json({ message: "Request sent", request });
+    } catch (error) {
+        console.error("Error in requestInstructor controller:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-    const request = await InstructorRequest.create({
-      user: user._id,
-      bio: bio.trim(),
-    });
-
-    user.isApplyForInstructor = true; 
-    await user.save();
-
-    res.status(201).json({ message: "Request sent", request });
-  } catch (error) {
-    console.error("Error in requestInstructor controller:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
+
+export const deleteRequest = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { requestId } = req.body;
+
+        const request = await InstructorRequest.findById(requestId);
+        if (!request) return res.status(404).json({ error: "request not found" });
+
+        await InstructorRequest.findByIdAndDelete(requestId);
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        user.isApplyForInstructor = false;
+
+        await user.save();
+        res.status(200).json({message: "Request deleted successfuly"})
+    } catch (error) {
+        console.log("Error in deleteRequest controller", error.message);
+        res.status(500).json({ error: " Internal server error" });
+    }
+}
 
 
 export const getStatus = async (req, res) => {
-  try {
-    const userId = req.user._id;
+    try {
+        const userId = req.user._id;
 
-    // 1. Check if user exists
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+        // 1. Check if user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // 2. Find instructor request with user populated
+        const request = await InstructorRequest.findOne({ user: userId }).populate(
+            "user",
+            "name email profileImg"
+        );
+
+        if (!request) {
+            return res.status(404).json({ error: "Instructor request not found" });
+        }
+
+        // 3. Success
+        return res.status(200).json({ success: true, data: request });
+
+    } catch (error) {
+        console.error("Error in getStatus controller:", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
-
-    // 2. Find instructor request with user populated
-    const request = await InstructorRequest.findOne({ user: userId }).populate(
-      "user",
-      "name email profileImg"
-    );
-
-    if (!request) {
-      return res.status(404).json({ error: "Instructor request not found" });
-    }
-
-    // 3. Success
-    return res.status(200).json({ success: true, data: request });
-
-  } catch (error) {
-    console.error("Error in getStatus controller:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
 };
 
 
