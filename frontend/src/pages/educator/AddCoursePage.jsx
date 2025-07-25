@@ -6,15 +6,14 @@ import { useCourseStore } from '../../store/useCourseStore';
 
 
 const AddCoursePage = () => {
-  const { createCourse } = useCourseStore();
+  const { createCourse, isCreatingCourse } = useCourseStore();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "",
     coursePrice: "",
     discount: "",
-    thumbnail: "" ,
-    category:"" 
+    thumbnail: "",
   })
   const [img, setImg] = useState(null);
   const imgRef = useRef(null);
@@ -142,7 +141,11 @@ const AddCoursePage = () => {
 
 
 
-        <button className='btn bg-zinc-800 hover:bg-black text-white '>Add</button>
+        <button className='btn bg-zinc-800 hover:bg-black text-white '
+          disabled={isCreatingCourse}
+        >
+          {isCreatingCourse ? "Creating..." : "Create Course"}
+        </button>
       </form>
     </div >
 
