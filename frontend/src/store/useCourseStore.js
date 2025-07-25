@@ -1,13 +1,15 @@
-import {create} from 'zustand';
-import {axiosInstance} from '../lib/axios';
+import { create } from 'zustand';
+import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 
 
-export const useCourseStore = create((set,get)=>({
+export const useCourseStore = create((set, get) => ({
     isCreatingCourse: false,
+    myCreatedCourse: [],
+    deletingCourseId: null,
 
-    createCourse: async(data)=>{
-        set({isCreatingCourse: true});
+    createCourse: async (data) => {
+        set({ isCreatingCourse: true });
         try {
             const res = await axiosInstance.post('/course/create-course', data);
             toast.success("Course created");
@@ -16,8 +18,41 @@ export const useCourseStore = create((set,get)=>({
             console.log("Erorr in createCourse:", errMsg);
             toast.error(errMsg)
         }
+        finally {
+            set({ isCreatingCourse: false })
+        }
+    },
+
+    getMyCreatedCourse: async () => {
+       
+        try {
+            const res = await axiosInstance.get('/course/instructor/courses')
+            set({ myCreatedCourse: res.data.courses});
+            console.log("API response", res.data.courses);
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to create course";
+            toast.error(errMsg)
+            console.log("Error in getMyCreatedCourse:", errMsg);
+            
+        }
+
+    },
+
+    deleteCourse: async (courseId)=>{ 
+        set({deletingCourseId: courseId})
+        try {
+            const res = await axiosInstance.delete(`/course/${courseId}/delete-course`)
+            toast.success(res.data.message);
+            get().getMyCreatedCourse(); //refersh th course list
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "failed to delete"
+            console.log("Error in deleteCourse: " ,errMsg);
+            toast.error(errMsg)
+            
+        }
         finally{
-            set({isCreatingCourse: false})
+            set({deletingCourseId: null,});
         }
     }
+
 }))

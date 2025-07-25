@@ -92,41 +92,41 @@ export const addSectionToCourse = async (req, res) => {
 };
 
 export const deleteSectionFromCourse = async (req, res) => {
-  try {
-    const { courseId, sectionId } = req.params;
+    try {
+        const { courseId, sectionId } = req.params;
 
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ error: "Course not found" });
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
+        }
+
+        if (String(course.instructor) !== String(req.user._id)) {
+            return res.status(403).json({ error: "You are not the instructor of this course" });
+        }
+
+        const sectionIndex = course.content.findIndex(sec => String(sec._id) === sectionId);
+        if (sectionIndex === -1) {
+            return res.status(404).json({ error: "Section not found" });
+        }
+
+        const section = course.content[sectionIndex];
+
+        // 🧹 Delete videos from Cloudinary
+        for (const video of section.videos) {
+            if (video.publicId) {
+                await cloudinary.uploader.destroy(video.publicId, { resource_type: "video" });
+            }
+        }
+
+        // 🧼 Remove section from course
+        course.content.splice(sectionIndex, 1);
+        await course.save();
+
+        res.status(200).json({ message: "✅ Section deleted successfully", deletedSection: section });
+    } catch (error) {
+        console.error("❌ Error in deleteSectionFromCourse controller:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-    if (String(course.instructor) !== String(req.user._id)) {
-      return res.status(403).json({ error: "You are not the instructor of this course" });
-    }
-
-    const sectionIndex = course.content.findIndex(sec => String(sec._id) === sectionId);
-    if (sectionIndex === -1) {
-      return res.status(404).json({ error: "Section not found" });
-    }
-
-    const section = course.content[sectionIndex];
-
-    // 🧹 Delete videos from Cloudinary
-    for (const video of section.videos) {
-      if (video.publicId) {
-        await cloudinary.uploader.destroy(video.publicId, { resource_type: "video" });
-      }
-    }
-
-    // 🧼 Remove section from course
-    course.content.splice(sectionIndex, 1);
-    await course.save();
-
-    res.status(200).json({ message: "✅ Section deleted successfully", deletedSection: section });
-  } catch (error) {
-    console.error("❌ Error in deleteSectionFromCourse controller:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
 
 export const addVideoToSection = async (req, res) => {
@@ -326,6 +326,38 @@ export const searchCourse = async (req, res) => {
     } catch (error) {
         console.log("Error in searchCourse controller", error.message);
         res.status(500).json({ error: "Internal sever error" });
+    }
+}
+
+export const NoOfStudentEnrolled = async (req, res) => {
+    try {
+        const instructorId = req.user._id;
+        const courses = await Course.find({ instructor: instructorId })
+            .populate({
+                path: "enrolledStudents",
+                select: "name email imageUrl",
+            })
+            .select("title enrolledStudents createdAt");
+
+
+        const students = [];
+
+        courses.forEach(course => {
+            course.enrolledStudents.forEach(student => {
+                students.push({
+                    studentName: student.name,
+                    studentEmail: student.email,
+                    avatar: student.imageUrl,
+                    courseTitle: course.title,
+                    enrolledDate: course.createdAt,
+                })
+            })
+
+        })
+        res.status(200).json({ students });
+    } catch (error) {
+        console.log("Error in NoOfStudentEnrolled: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 }
 
