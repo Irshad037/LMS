@@ -7,9 +7,16 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { MdDeleteForever } from "react-icons/md";
 import file_upload_icon from '../../assets/file_upload_icon.svg'
 import { IoCloseSharp } from "react-icons/io5";
+import { useCourseStore } from '../../store/useCourseStore';
+import { useParams } from 'react-router-dom';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const CoursePlayerPage = () => {
+    const {  createSection:createSectionFnc, isCreatingSection, getMyCreatedCourse,myCreatedCourse } = useCourseStore();
+
+
     const [createSeaction, setCreateSection] = useState(false);
+    const [sectionTitle, setSectionTitle] = useState("");
     const [openSection, setOpenSection] = useState({})
     const [hoveredStar, setHoveredStar] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
@@ -17,7 +24,9 @@ const CoursePlayerPage = () => {
     const [video, setVideo] = useState(null);
     const [videoURL, setVideoURL] = useState(null);
     const videoRef = useRef(null);
-
+    const { courseId } = useParams();
+    
+    const content = getMyCreatedCourse.content;
 
     const handleClick = (value) => {
         setSelectedRating(value);
@@ -43,8 +52,10 @@ const CoursePlayerPage = () => {
         }));
     }
 
-    const handleCreateSection = (e) => {
+    const handleCreateSection = async (e) => {
         e.preventDefault();
+        await createSectionFnc(courseId, { sectionTitle });
+        setSectionTitle("");
         setCreateSection(!createSeaction)
     }
 
@@ -61,10 +72,33 @@ const CoursePlayerPage = () => {
 
 
     return (
-        <div className='px-[130px] py-[70px] my-9 flex items-center flex-col'>
+        <div className='px-[130px] py-[70px] my-9 flex items-center flex-col relative'>
+
+            {createSeaction &&
+                <form onSubmit={handleCreateSection} className='w-[400px] h-[220px] shadow-md shadow-black bg-white mt-10 rounded-md absolute top-5'>
+
+                    <img src={cross_icon} alt="close" className='mt-4 ml-4 w-4 cursor-pointer'
+                        onClick={() => setCreateSection(!createSeaction)}
+                    />
+                    <div className='w-full p-6 flex items-center flex-col gap-4'>
+                        <h2 className="text-xl font-bold ">Section Title</h2>
+                        <input
+                            type="text"
+                            name='title'
+                            value={sectionTitle}
+                            onChange={(e) => setSectionTitle(e.target.value)}
+                            className='w-full border-zinc-700 p-2 border rounded-[4px]'
+                            placeholder='Type here'
+                        />
+                        <button type="submit" className='btn btn-primary w-full' disabled={isCreatingSection}>
+                            {isCreatingSection ? <><LoadingSpinner /> Adding...</> : "Add"}
+                        </button>
+                    </div>
+                </form>
+            }
 
             <div className='flex items-center justify-between gap-10'>
-                <div className='flex items-center flex-col  flex-1'>
+                <div className='flex items-center flex-col  flex-1 '>
 
                     <div className=' mb-2 w-full flex items-center justify-between'>
                         <h1 className='text-2xl font-bold '>Course Structure</h1>
@@ -76,23 +110,7 @@ const CoursePlayerPage = () => {
                         </button>
                     </div>
 
-                    {createSeaction &&
-                        <form onSubmit={handleCreateSection} className='w-[400px] h-[220px] shadow-md shadow-black bg-white mt-10 rounded-md'>
 
-                            <img src={cross_icon} alt="close" className='mt-4 ml-4 w-4 cursor-pointer'
-                                onClick={() => setCreateSection(!createSeaction)}
-                            />
-                            <div className='w-full p-6 flex items-center flex-col gap-4'>
-                                <h2 className="text-xl font-bold ">Section Title</h2>
-                                <input
-                                    type="text"
-                                    className='w-full border-zinc-700 p-2 border rounded-[4px]'
-                                    placeholder='Type here'
-                                />
-                                <button oncli className='btn btn-primary w-full '>Add</button>
-                            </div>
-                        </form>
-                    }
 
                     {dummyCoursesPlayer[0].content.map((section, index) => (
 

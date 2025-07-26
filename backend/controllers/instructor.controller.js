@@ -84,7 +84,7 @@ export const addSectionToCourse = async (req, res) => {
         course.content.push({ sectionTitle, videos: [] });
 
         await course.save();
-        res.status(201).json({ message: "✅ Section added successfully", course });
+        res.status(201).json({ message: "Section added successfully", course });
     } catch (error) {
         console.error("❌ Error in addSectionToCourse:", error.message);
         res.status(500).json({ error: "Internal server error" });
