@@ -7,10 +7,18 @@ import patients_icon from '../../assets/patients_icon.svg'
 import earning_icon from '../../assets/earning_icon.svg'
 import profile_img_1 from '../../assets/profile_img_1.png'
 import user_icon from '../../assets/user_icon.svg';
+import { useCourseStore } from '../../store/useCourseStore'
+import { useEffect } from 'react'
 
 const DashboardPage = () => {
   const { authUser } = useAuthStore();
-  const { requestStatus, instructorRequest, deleteRequest } = useUserStore();
+  const {instructorRequest, deleteRequest } = useUserStore();
+  const { getNoOfStudentEnrolled, enrolledStudents, getMyCreatedCourse,myCreatedCourse } = useCourseStore();
+
+  useEffect(()=>{
+    getNoOfStudentEnrolled();
+    getMyCreatedCourse();
+  },[])
 
   return (
     <div className=' flex flex-col py-[100px] px-[130px]'>
@@ -22,7 +30,7 @@ const DashboardPage = () => {
             <div className='flex items-center p-5 w-60 bg-white border border-blue-200 shadow-xl rounded-md gap-2'>
               <img src={patients_icon} alt="person" />
               <div >
-                <p className='text-xl font-bold text-center'>2</p>
+                <p className='text-xl font-bold text-center'>{enrolledStudents?.length || 0}</p>
                 <p>Total Enrollments</p>
               </div>
             </div>
@@ -30,7 +38,7 @@ const DashboardPage = () => {
             <div className='flex items-center p-5 w-60 bg-white border border-blue-200 shadow-xl rounded-md gap-2'>
               <img src={appointments_icon} alt="person" />
               <div >
-                <p className='text-xl font-bold text-center'>2</p>
+                <p className='text-xl font-bold text-center'>{myCreatedCourse?.length || 0}</p>
                 <p>Total Courses</p>
               </div>
             </div>
@@ -59,16 +67,16 @@ const DashboardPage = () => {
 
 
               {
-                dummyCourses.slice(0, 2).map((course, idx) => (
+                enrolledStudents.slice(0, 2).map((student, idx) => (
                   <div key={idx} className='flex items-center justify-between p-4 border-b border-zinc-500'>
 
                     <p className='p-1'>{idx + 1}</p>
                     <div className='flex items-center gap-3 basis-[45%]'>
-                      <img src={profile_img_1} alt="" className='w-12 rounded-full' />
-                      <h1>student{idx + 1}</h1>
+                      <img src={student?.avatar || user_icon} alt="profileImg" className='w-12 rounded-full' />
+                      <h1>{student.studentName}</h1>
                     </div>
 
-                    <div className='basis-[45%]'>{course.title}</div>
+                    <div className='basis-[45%]'>{student.courseTitle}</div>
                   </div>
                 ))
               }
