@@ -6,6 +6,7 @@ import { Line } from 'rc-progress';
 
 
 const MyEnrollementPage = () => {
+  
   const [progressArray, setProgressArray] = useState([
     { lectureCompleted: 1, totalLecture: 2 },
     { lectureCompleted: 1, totalLecture: 1 }

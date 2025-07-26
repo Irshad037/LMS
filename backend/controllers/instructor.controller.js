@@ -334,8 +334,8 @@ export const NoOfStudentEnrolled = async (req, res) => {
         const instructorId = req.user._id;
         const courses = await Course.find({ instructor: instructorId })
             .populate({
-                path: "enrolledStudents",
-                select: "name email imageUrl",
+                path: "enrolledStudents.student",
+                select: "name email profileImg",
             })
             .select("title enrolledStudents createdAt");
 
@@ -343,14 +343,17 @@ export const NoOfStudentEnrolled = async (req, res) => {
         const students = [];
 
         courses.forEach(course => {
-            course.enrolledStudents.forEach(student => {
-                students.push({
-                    studentName: student.name,
-                    studentEmail: student.email,
-                    avatar: student.imageUrl,
-                    courseTitle: course.title,
-                    enrolledDate: course.createdAt,
-                })
+            
+            course.enrolledStudents.forEach(({ student, enrolledAt }) => {
+                if (student) {
+                    students.push({
+                        studentName: student.name,
+                        studentEmail: student.email,
+                        avatar: student.profileImg,
+                        courseTitle: course.title,
+                        enrolledDate: enrolledAt,
+                    });
+                }
             })
 
         })
@@ -360,6 +363,7 @@ export const NoOfStudentEnrolled = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 
 

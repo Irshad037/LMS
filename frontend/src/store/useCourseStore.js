@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 export const useCourseStore = create((set, get) => ({
     isCreatingCourse: false,
     myCreatedCourse: [],
+    enrolledStudents: [],
     deletingCourseId: null,
 
     createCourse: async (data) => {
@@ -52,6 +53,17 @@ export const useCourseStore = create((set, get) => ({
         }
         finally{
             set({deletingCourseId: null,});
+        }
+    },
+
+    getNoOfStudentEnrolled: async()=>{
+        try {
+            const res = await axiosInstance.get("/course/enrolledStudent")
+            set({enrolledStudents: res.data.students})
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to fetch enrolled students";
+            console.log("Error in getNoOfStudentEnrolled:", errMsg);    
+            toast.error(errMsg);
         }
     }
 

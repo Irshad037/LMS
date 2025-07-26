@@ -39,11 +39,12 @@ const courseSchema = new mongoose.Schema(
         ]
       }
     ],
-
-    enrolledStudents: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }],
+     enrolledStudents: [
+      {
+        student: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        enrolledAt: { type: Date, default: Date.now },
+      }
+    ],
     reviews: [
       {
         user: {

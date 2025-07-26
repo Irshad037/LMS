@@ -52,7 +52,7 @@ export const deleteRequest = async (req, res) => {
         user.isApplyForInstructor = false;
 
         await user.save();
-        res.status(200).json({message: "Request deleted successfuly"})
+        res.status(200).json({ message: "Request deleted successfuly" })
     } catch (error) {
         console.log("Error in deleteRequest controller", error.message);
         res.status(500).json({ error: " Internal server error" });
@@ -232,25 +232,31 @@ export const enrollInCourse = async (req, res) => {
         const course = await Course.findById(courseId);
 
         if (!course || !user) {
-            return res.status(404).json({ error: "user Or course not found" });
+            return res.status(404).json({ error: "User or course not found" });
         }
 
         if (user.enrolledCourses.includes(courseId)) {
             return res.status(400).json({ error: "Already enrolled in this course" });
         }
 
+        // Add course to user's enrolledCourses
         user.enrolledCourses.push(courseId);
         await user.save();
 
-        course.enrolledStudents.push(user._id);
+        // ✅ Add student to course's enrolledStudents with full object
+        course.enrolledStudents.push({
+            student: user._id,
+            enrolledAt: new Date(),
+        });
         await course.save();
 
         res.status(200).json({ message: "✅ Enrolled in course successfully", courseId });
     } catch (error) {
         console.log("Error in enrollInCourse controller", error.message);
-        res.status(500).json({ error: "Internal server error" })
+        res.status(500).json({ error: "Internal server error" });
     }
-}
+};
+
 
 export const getEnrolledCourses = async (req, res) => {
     try {
