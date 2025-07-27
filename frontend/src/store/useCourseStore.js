@@ -43,8 +43,6 @@ export const useCourseStore = create((set, get) => ({
 
     },
 
-
-
     createSection: async (courseId, data) => {
         set({ isCreatingSection: true });
         try {

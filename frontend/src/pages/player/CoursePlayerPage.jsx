@@ -236,14 +236,21 @@ const CoursePlayerPage = () => {
 
                         <div key={index} className='w-full flex justify-between '>
 
-                            <div
-                                className='basis-[10%] mt-4 p-4 w-[58px] h-[60px] border border-zinc-300 shadow-xl rounded-l-md bg-white flex items-center justify-center'>
-                                <MdDeleteForever size={25} className='cursor-pointer hover:text-red-700'
-                                    onClick={async () => {
-                                        const confirmDelete = window.confirm("Are you sure you want to delete this section?");
-                                    }}
-                                />
-                            </div>
+                            {deleteSectionId == section._id ?(<LoadingSpinner size={16} />) :
+                                
+                                (<div
+                                        className='basis-[10%] mt-4 p-4 w-[58px] h-[60px] border border-zinc-300 shadow-xl rounded-l-md bg-white flex items-center justify-center'>
+                                        <MdDeleteForever size={25} className='cursor-pointer hover:text-red-700'
+                                            onClick={async () => {
+                                                const confirmDelete = window.confirm("Are you sure you want to delete this section?");
+                                                if (confirmDelete) {
+                                                    await deleteSection(currCourse._id, section._id);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }
 
                             <div className='basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white rounded-r-md rounded-b-md'>
 
@@ -299,7 +306,7 @@ const CoursePlayerPage = () => {
                                                     Watch
                                                 </div>
                                                 <div className='text-base font-semibold text-zinc-600'>{video.duration} Minutes</div>
-                                                
+
                                                 {deleteVideoId === video._id ? (
                                                     <LoadingSpinner size={16} />
                                                 ) : (
