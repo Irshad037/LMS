@@ -10,23 +10,32 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useCourseStore } from '../../store/useCourseStore';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useEffect } from 'react';
 
 const CoursePlayerPage = () => {
-    const {  createSection:createSectionFnc, isCreatingSection, getMyCreatedCourse,myCreatedCourse } = useCourseStore();
+    const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse } = useCourseStore();
 
 
     const [createSeaction, setCreateSection] = useState(false);
+    const [addVideoModal, setAddVideoModal] = useState(false);
     const [sectionTitle, setSectionTitle] = useState("");
     const [openSection, setOpenSection] = useState({})
     const [hoveredStar, setHoveredStar] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
     const [comment, setComment] = useState("");
+    const { courseId } = useParams();
     const [video, setVideo] = useState(null);
     const [videoURL, setVideoURL] = useState(null);
     const videoRef = useRef(null);
-    const { courseId } = useParams();
-    
-    const content = getMyCreatedCourse.content;
+    const [formData, setFormData] = useState({
+        title: "",
+        duration: "",
+        video: ""
+    })
+
+
+    const currCourse = myCreatedCourse?.find((course) => course._id === courseId)
+    const contents = currCourse?.content || [];
 
     const handleClick = (value) => {
         setSelectedRating(value);
@@ -52,6 +61,16 @@ const CoursePlayerPage = () => {
         }));
     }
 
+    const handleAddVideo = (e) => {
+        e.preventDefault();
+
+        const payload = {
+            ...formData,
+            video: videoURL,
+        }
+
+    }
+
     const handleCreateSection = async (e) => {
         e.preventDefault();
         await createSectionFnc(courseId, { sectionTitle });
@@ -70,6 +89,9 @@ const CoursePlayerPage = () => {
     };
 
 
+    useEffect(() => {
+        getMyCreatedCourse();
+    }, [])
 
     return (
         <div className='px-[130px] py-[70px] my-9 flex items-center flex-col relative'>
@@ -96,7 +118,89 @@ const CoursePlayerPage = () => {
                     </div>
                 </form>
             }
+            {addVideoModal &&
+                <div className=" flex items-center justify-center w-[400px] bg-white my-10 absolute t-6 z-10 rounded-md shadow-2xl shadow-black">
+                    <form onSubmit={handleAddVideo} className="w-full rounded-xl p-6 shadow bg-white flex flex-col gap-6">
+                        <img src={cross_icon} alt="close" className='mt-4 ml-4 w-4 cursor-pointer'
+                            onClick={() => setAddVideoModal(!addVideoModal)}
+                        />
+                        {/* Video Title Input */}
+                        <div>
+                            <h2 className="text-xl font-bold mb-1 text-center">Video Title</h2>
+                            <input
+                                type="text"
+                                name='title'
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                                className="w-full border border-zinc-400 p-2 rounded-sm focus:outline-none focus:border-zinc-700"
+                                placeholder="Type here"
+                            />
+                        </div>
 
+                        {/* Video Upload Section */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-3">
+                                <h3 className="text-xl text-zinc-600 font-semibold">Add Video</h3>
+                                <div
+                                    className="w-10 h-10 bg-blue-700 flex items-center justify-center rounded-md cursor-pointer hover:bg-blue-800"
+                                    onClick={() => videoRef.current.click()}
+                                >
+                                    <img src={file_upload_icon} alt="Upload" className="w-6 h-6" />
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="video/mp4"
+                                    hidden
+                                    ref={videoRef}
+                                    onChange={handleVideoChange}
+                                />
+
+
+                            </div>
+
+                            {/* Preview if video is selected */}
+                            {videoURL && (
+                                <div className="relative bg-gray-800 w-full rounded overflow-hidden ">
+                                    <IoCloseSharp
+                                        className="absolute top-2 right-2 text-white bg-gray-700 rounded-full w-6 h-6 p-1 cursor-pointer z-10 pointer-events-auto"
+                                        onClick={() => {
+                                            setVideo(null);
+                                            setVideoURL(null);
+                                            videoRef.current.value = null;
+                                        }}
+                                    />
+                                    <video
+                                        src={videoURL}
+                                        controls
+                                        className="w-full aspect-video object-contain rounded"
+                                    />
+
+                                </div>
+                            )}
+                        </div>
+
+                        <div className=' flex items-center gap-4'>
+                            <h2 className="text-xl text-zinc-600 font-semibold">Duration</h2>
+                            <input
+                                type="number"
+                                name='duration'
+                                value={formData.duration}
+                                onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                                className="basis-[70%] w-full border border-zinc-400 p-2 rounded-sm focus:outline-none focus:border-zinc-700"
+                                placeholder="Type here"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            className="btn btn-primary hover:bg-black text-white px-4 py-2 rounded-md"
+                        >
+                            Add
+                        </button>
+                    </form>
+                </div>
+            }
             <div className='flex items-center justify-between gap-10'>
                 <div className='flex items-center flex-col  flex-1 '>
 
@@ -111,10 +215,19 @@ const CoursePlayerPage = () => {
                     </div>
 
 
+                    {contents.length === 0 && (
+                        <div className='w-full h-32 bg-white mt-10 p-6 rounded-md shadow-xl'>
+                            <div className='bg-slate-200 w-full h-full rounded-md shadow-inner flex items-center justify-center'>
+                                <p className="text-center text-gray-500 italic text-lg ">No section Added yet</p>
+                            </div>
+                        </div>
 
-                    {dummyCoursesPlayer[0].content.map((section, index) => (
+                    )}
 
-                        <div key={section.sectionTitle} className='w-full flex justify-between '>
+
+                    {contents.map((section, index) => (
+
+                        <div key={index} className='w-full flex justify-between '>
 
                             <div
                                 className='basis-[10%] mt-4 p-4 w-[58px] h-[60px] border border-zinc-300 shadow-xl rounded-l-md bg-white flex items-center justify-center'>
@@ -131,13 +244,27 @@ const CoursePlayerPage = () => {
 
                                         <h1 className='text-xl font-bold text-zinc-700'>{section.sectionTitle}</h1>
                                     </div>
-                                    <button className='btn bg-zinc-700 text-white hover:bg-black'>Add video</button>
+                                    <button className='btn bg-zinc-700 text-white hover:bg-black '
+                                        onClick={() => { setAddVideoModal(!addVideoModal) }}
+                                    >
+                                        Add video
+                                    </button>
                                 </div>
 
-                                {openSection[index] && <>
-                                    {section.videos.map((video) => (
 
-                                        <div key={video.publicId} className='py-[10px] px-[30px] gap-2 flex items-center justify-between w-full'>
+                                <div
+                                    className={`overflow-hidden transition-max-h duration-500 ease-in-out
+                                            ${openSection[index] ? "max-h-[1000px]" : "max-h-0"}`
+                                        }
+                                >
+
+                                    {section?.videos?.length === 0 &&
+
+                                        <p className="text-center text-gray-500 italic p-5">No videos added in this section</p>
+                                    }
+                                    {section?.videos.map((video, idx) => (
+
+                                        <div key={video.publicId || idx} className='py-[10px] px-[30px] gap-2 flex items-center justify-between w-full'>
 
                                             <div className=' flex items-center gap-1'>
                                                 <div className='bg-zinc-600 w-5 h-5 flex items-center justify-center rounded-full text-white'>
@@ -152,13 +279,12 @@ const CoursePlayerPage = () => {
                                                 <MdDeleteForever size={19} className='text-red-700 cursor-pointer hover:text-red-950' />
                                             </div>
 
-
-
-
-
                                         </div>
                                     ))}
-                                </>}
+                                </div>
+
+
+
                             </div>
 
 
@@ -169,68 +295,7 @@ const CoursePlayerPage = () => {
                     ))}
 
 
-                    <div className="flex items-center justify-center w-[400px] bg-white my-10">
-                        <form className="w-full rounded-xl p-6 shadow bg-white flex flex-col gap-6">
 
-                            {/* Video Title Input */}
-                            <div>
-                                <h2 className="text-xl font-bold mb-1 text-center">Video Title</h2>
-                                <input
-                                    type="text"
-                                    className="w-full border border-zinc-300 p-2 rounded-md focus:outline-none focus:border-zinc-700"
-                                    placeholder="Type here"
-                                />
-                            </div>
-
-                            {/* Video Upload Section */}
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center gap-3">
-                                    <h3 className="text-xl text-zinc-600 font-semibold">Add Video</h3>
-                                    <div
-                                        className="w-10 h-10 bg-blue-700 flex items-center justify-center rounded-md cursor-pointer hover:bg-blue-800"
-                                        onClick={() => videoRef.current.click()}
-                                    >
-                                        <img src={file_upload_icon} alt="Upload" className="w-6 h-6" />
-                                    </div>
-                                    <input
-                                        type="file"
-                                        accept="video/mp4"
-                                        hidden
-                                        ref={videoRef}
-                                        onChange={handleVideoChange}
-                                    />
-                                </div>
-
-                                {/* Preview if video is selected */}
-                                {videoURL && (
-                                    <div className="relative bg-gray-800 w-full rounded overflow-hidden ">
-                                        <IoCloseSharp
-                                            className="absolute top-2 right-2 text-white bg-gray-700 rounded-full w-6 h-6 p-1 cursor-pointer z-10 pointer-events-auto"
-                                            onClick={() => {
-                                                setVideo(null);
-                                                setVideoURL(null);
-                                                videoRef.current.value = null;
-                                            }}
-                                        />
-                                        <video
-                                            src={videoURL}
-                                            controls
-                                            className="w-full aspect-video object-contain rounded"
-                                        />
-
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                className="btn bg-zinc-800 hover:bg-black text-white px-4 py-2 rounded-md"
-                            >
-                                Add
-                            </button>
-                        </form>
-                    </div>
 
 
 

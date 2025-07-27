@@ -5,20 +5,19 @@ import { useUserStore } from '../../store/useUserStore'
 import appointments_icon from '../../assets/appointments_icon.svg'
 import patients_icon from '../../assets/patients_icon.svg'
 import earning_icon from '../../assets/earning_icon.svg'
-import profile_img_1 from '../../assets/profile_img_1.png'
 import user_icon from '../../assets/user_icon.svg';
 import { useCourseStore } from '../../store/useCourseStore'
 import { useEffect } from 'react'
 
 const DashboardPage = () => {
   const { authUser } = useAuthStore();
-  const {instructorRequest, deleteRequest } = useUserStore();
-  const { getNoOfStudentEnrolled, enrolledStudents, getMyCreatedCourse,myCreatedCourse } = useCourseStore();
+  const { instructorRequest, deleteRequest } = useUserStore();
+  const { getNoOfStudentEnrolled, enrolledStudents, getMyCreatedCourse, myCreatedCourse } = useCourseStore();
 
-  useEffect(()=>{
+  useEffect(() => {
     getNoOfStudentEnrolled();
     getMyCreatedCourse();
-  },[])
+  }, [])
 
   return (
     <div className=' flex flex-col py-[100px] px-[130px]'>
@@ -72,7 +71,7 @@ const DashboardPage = () => {
 
                     <p className='p-1'>{idx + 1}</p>
                     <div className='flex items-center gap-3 basis-[45%]'>
-                      <img src={student?.avatar || user_icon} alt="profileImg" className='w-12 rounded-full' />
+                      <img src={student?.avatar || patients_icon} alt="profileImg" className='w-12 shadow-md border border-zinc-300 rounded-full border' />
                       <h1>{student.studentName}</h1>
                     </div>
 
@@ -117,14 +116,20 @@ const DashboardPage = () => {
                         ? "text-blue-600"
                         : instructorRequest.status === "rejected"
                           ? "text-red-600"
-                          : "text-green-700"
+                          : "text-green-500"
                         }`}
                     >
                       {instructorRequest.status.replace(/^\w/, c => c.toUpperCase())}
                     </span>
                   )}
                 </p>
-                | <p className="text-sm  text-gray-600">Submitted on: {new Date(instructorRequest?.createdAt).toLocaleDateString()}</p>
+                | <p className="text-sm  text-gray-600">Submitted on: {new Date(instructorRequest?.createdAt).toLocaleDateString(
+                  'en-IN', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric'
+                }
+                )}</p>
               </div>
 
               {

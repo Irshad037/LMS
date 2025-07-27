@@ -10,6 +10,7 @@ export const useCourseStore = create((set, get) => ({
     deletingCourseId: null,
     isCreatingCourse: false,
     isCreatingSection:false,
+    isAddingVideo:false,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -70,6 +71,18 @@ export const useCourseStore = create((set, get) => ({
         }
         finally{
             set({isCreatingSection: false})
+        }
+    },
+
+    addVideoToSection: async(courseId, sectionId, data)=>{
+        set({isAddingVideo:true});
+        try {
+            const res = await axiosInstance.post(`/course/${courseId}/section/${sectionId}/add-video`, data)
+            toast.success(res.data.message);
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to add video to section";
+            console.log("Error in addVideoToSection",errMsg);
+            toast.error(errMsg);
         }
     },
 

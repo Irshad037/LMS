@@ -1,6 +1,6 @@
 import React from 'react'
 import user_icon from '../../assets/user_icon.svg'
-import { dummyCourses } from '../../assets/assets'
+import patients_icon from '../../assets/patients_icon.svg'
 import { useCourseStore } from '../../store/useCourseStore';
 import { useEffect } from 'react';
 
@@ -37,7 +37,7 @@ const StudentEnrolledPage = () => {
 
               <p className='basis-[5%]'>{idx + 1}</p>
               <div className='flex items-center gap-3 basis-[35%]'>
-                <img src={student?.avatar || user_icon} alt="" className='w-12 rounded-full' />
+                <img src={student?.avatar || patients_icon} alt="" className='w-12 shadow-md border border-zinc-300  rounded-full' />
                 <h1>{student.studentName}</h1>
               </div>
 

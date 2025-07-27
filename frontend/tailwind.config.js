@@ -7,7 +7,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      transitionProperty: {
+        'max-h': 'max-height',
+      },
+    },
   },
   plugins: [daisyui],
   daisyui: {

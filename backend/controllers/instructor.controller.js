@@ -130,45 +130,51 @@ export const deleteSectionFromCourse = async (req, res) => {
 };
 
 export const addVideoToSection = async (req, res) => {
-    try {
-        const { courseId, sectionTitle } = req.params;
-        const { title } = req.body;
-        const videoUrl = req.file?.path;
-        const publicId = req.file?.filename;
+  try {
+    const { courseId, sectionId } = req.params;
+    const { title, duration } = req.body;
+    const videoUrl = req.file?.path;
+    const publicId = req.file?.filename;
 
-        if (!videoUrl || !title || !sectionTitle || !publicId) {
-            return res.status(400).json({ error: "Title, sectionTitle, and video file are required" });
-        }
-
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
-        }
-
-        if (String(course.instructor) !== String(req.user._id)) {
-            return res.status(403).json({ error: "Unauthorized" });
-        }
-
-        const sectionIndex = course.content.findIndex(sec => sec.sectionTitle === sectionTitle);
-
-        if (sectionIndex === -1) {
-            return res.status(404).json({ error: "Section not found" });
-        }
-
-        course.content[sectionIndex].videos.push({
-            title,
-            videoUrl,
-            publicId,
-        });
-
-        await course.save();
-
-        res.status(200).json({ message: "✅ Video added to section", course });
-    } catch (error) {
-        console.error("❌ Error in addVideoToSection:", error.message);
-        res.status(500).json({ error: "Internal server error" });
+    if (!videoUrl || !title || !sectionId || !publicId) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    if (String(course.instructor) !== String(req.user._id)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    // 🔍 Find section by its _id
+    const sectionIndex = course.content.findIndex(
+      sec => String(sec._id) === String(sectionId)
+    );
+
+    if (sectionIndex === -1) {
+      return res.status(404).json({ error: "Section not found" });
+    }
+
+    // ✅ Add video to the correct section
+    course.content[sectionIndex].videos.push({
+      title,
+      videoUrl,
+      publicId,
+      duration,
+    });
+
+    await course.save();
+
+    res.status(200).json({ message: " Video added to section", course });
+  } catch (error) {
+    console.error("❌ Error in addVideoToSection:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
+
 
 
 export const deleteVideoFromCourse = async (req, res) => {
