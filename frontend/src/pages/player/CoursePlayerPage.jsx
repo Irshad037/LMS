@@ -19,6 +19,7 @@ const CoursePlayerPage = () => {
 
     const [createSeaction, setCreateSection] = useState(false);
     const [addVideoModal, setAddVideoModal] = useState(false);
+    const [playLecture, setPlayLecture] = useState(false);
     const [sectionTitle, setSectionTitle] = useState("");
     const [openSection, setOpenSection] = useState({})
     const [hoveredStar, setHoveredStar] = useState(0);
@@ -29,6 +30,7 @@ const CoursePlayerPage = () => {
     const videoRef = useRef(null);
     const [sectionId, setSectionId] = useState("");
     const [formData, setFormData] = useState({ title: "", duration: "", video: null })
+    const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "",Sidx:Number,Vidx:Number });
 
 
 
@@ -99,7 +101,7 @@ const CoursePlayerPage = () => {
     return (
         <div className='px-[130px] py-[70px] my-9 flex items-center flex-col relative'>
 
-            {createSeaction &&
+            {createSeaction && (
                 <form onSubmit={handleCreateSection} className='w-[400px] h-[220px] shadow-md shadow-black bg-white mt-10 rounded-md absolute top-5'>
 
                     <img src={cross_icon} alt="close" className='mt-4 ml-4 w-4 cursor-pointer'
@@ -120,8 +122,9 @@ const CoursePlayerPage = () => {
                         </button>
                     </div>
                 </form>
-            }
-            {addVideoModal &&
+            )}
+
+            {addVideoModal && (
                 <div className=" flex items-center justify-center w-[400px] bg-white my-10 absolute t-6 z-10 rounded-md shadow-2xl shadow-black">
                     <form onSubmit={handleAddVideo} className="w-full rounded-xl p-6 shadow bg-white flex flex-col gap-6">
                         <img src={cross_icon} alt="close" className='mt-4 ml-4 w-4 cursor-pointer'
@@ -204,9 +207,10 @@ const CoursePlayerPage = () => {
                         </button>
                     </form>
                 </div>
-            }
-            <div className='flex items-center justify-between gap-10'>
-                <div className='flex items-center flex-col  flex-1 '>
+            )}
+
+            <div className='flex items-center justify-between gap-10 w-full'>
+                <div className='flex items-center flex-col  basis-[50%] '>
 
                     <div className=' mb-2 w-full flex items-center justify-between'>
                         <h1 className='text-2xl font-bold '>Course Structure</h1>
@@ -259,7 +263,7 @@ const CoursePlayerPage = () => {
                                 </div>
 
 
-                                <div  className={`overflow-hidden transition-all duration-500 ease-in-out
+                                <div className={`overflow-hidden transition-all duration-500 ease-in-out
                                     ${openSection[index] ? "max-h-[9999px] opacity-100" : "max-h-0 opacity-0"}`}
                                 >
                                     {section?.videos?.length === 0 && (
@@ -278,7 +282,19 @@ const CoursePlayerPage = () => {
                                             </div>
 
                                             <div className='flex items-center gap-2'>
-                                                <div className='text-blue-600 text-base font-semibold cursor-pointer'>Watch</div>
+                                                <div className='text-blue-600 text-base font-semibold cursor-pointer'
+                                                    onClick={() => {
+                                                        setPlayLecture(true)
+                                                        setCurrVideoInfo({
+                                                            title: video.title,
+                                                            videoUrl: video.videoUrl,
+                                                            Vidx:idx,
+                                                            Sidx:index
+                                                        })
+                                                    }}
+                                                >
+                                                    Watch
+                                                </div>
                                                 <div className='text-base font-semibold text-zinc-600'>{video.duration} Minutes</div>
                                                 <MdDeleteForever size={19} className='text-red-700 cursor-pointer hover:text-red-950' />
                                             </div>
@@ -298,23 +314,39 @@ const CoursePlayerPage = () => {
 
                     ))}
 
-
-
-
-
-
                 </div>
 
 
                 <div className=' flex-1 mt-16 '>
-                    <video
-                        controls
-                        className="w-full rounded-xl shadow-md "
-                        src="https://res.cloudinary.com/di18zpmn5/video/upload/v1751224822/lms_videos/a4ft3iddpjtjiyutkaym.mp4"
-                    >
-                        Your browser does not support the video tag.
-                    </video>
-                    <h1 className='text-xl ml-3 font-semibold'>video title</h1>
+                    {!playLecture && (
+                        <div>
+                            <img src={currCourse?.thumbnail} alt="" className='w-full rounded-xl shadow-md shadow-zinc-900 ' />
+                        </div>
+                    )}
+
+                    {playLecture && (
+                        <div className="w-full bg-white rounded-xl border border-zinc-300 shadow-sm overflow-hidden">
+  <video
+    controls
+    className="w-full aspect-video object-cover"
+    src={currVideoInfo.videoUrl}
+  >
+    Your browser does not support the video tag.
+  </video>
+
+  <div className="p-4 bg-zinc-50 flex items-center gap-2">
+    <span className="text-xl font-semibold text-zinc-500">
+      {currVideoInfo.Sidx + 1}.{currVideoInfo.Vidx + 1}
+    </span>
+    <h2 className="text-xl font-bold text-zinc-700 truncate">
+      {currVideoInfo.title}
+    </h2>
+  </div>
+</div>
+
+
+                    )}
+
                 </div>
 
 

@@ -8,6 +8,8 @@ export const useCourseStore = create((set, get) => ({
     myCreatedCourse: [],
     enrolledStudents: [],
     deletingCourseId: null,
+    deleteInSectionId:null,
+    deleteVideoId:null,
     isCreatingCourse: false,
     isCreatingSection: false,
     isAddingVideo: false,
@@ -32,7 +34,6 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get('/course/instructor/courses')
             set({ myCreatedCourse: res.data.courses });
-            console.log("API response", res.data.courses);
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to create course";
             toast.error(errMsg)
@@ -64,6 +65,7 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post(`/course/${courseId}/add-section`, data);
             toast.success(res.data.message);
+            get().getMyCreatedCourse()
         } catch (error) {
             const errMsd = error?.response?.data?.error || "Failed to create section";
             console.log("Error in createSection:", errMsd);
@@ -104,6 +106,10 @@ export const useCourseStore = create((set, get) => ({
             console.log("Error in getNoOfStudentEnrolled:", errMsg);
             toast.error(errMsg);
         }
+    },
+
+    deleteSection: async(sectionId)=>{
+
     }
 
 }))
