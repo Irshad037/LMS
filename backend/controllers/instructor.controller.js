@@ -122,7 +122,7 @@ export const deleteSectionFromCourse = async (req, res) => {
         course.content.splice(sectionIndex, 1);
         await course.save();
 
-        res.status(200).json({ message: "✅ Section deleted successfully", deletedSection: section });
+        res.status(200).json({ message: "Section deleted successfully", deletedSection: section });
     } catch (error) {
         console.error("❌ Error in deleteSectionFromCourse controller:", error.message);
         res.status(500).json({ error: "Internal server error" });
@@ -167,49 +167,57 @@ export const addVideoToSection = async (req, res) => {
   }
 };
 
-
-
 export const deleteVideoFromCourse = async (req, res) => {
-    try {
-        const { courseId, videoId } = req.params;
+  try {
+    const { courseId, sectionId, videoId } = req.params;
 
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
-        }
-
-        // Check instructor ownership
-        if (String(course.instructor) !== String(req.user._id)) {
-            return res.status(403).json({ error: "Unauthorized" });
-        }
-
-        // Find the lesson to delete
-        const videoToDelete = course.content.find(
-            (lesson) => String(lesson._id) === String(videoId)
-        );
-
-        if (!videoToDelete) {
-            return res.status(404).json({ error: "Video not found in course" });
-        }
-
-        // 1. Delete from Cloudinary
-        await cloudinary.uploader.destroy(videoToDelete.publicId, {
-            resource_type: "video",
-        });
-
-        // 2. Remove from MongoDB
-        course.content = course.content.filter(
-            (lesson) => String(lesson._id) !== String(videoId)
-        );
-
-        await course.save();
-
-        res.status(200).json({ message: "✅ lecture deleted from course" });
-    } catch (error) {
-        console.error("❌ Error deleting video:", error.message);
-        res.status(500).json({ error: "Internal server error" });
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
     }
+
+    // Check instructor ownership
+    if (String(course.instructor) !== String(req.user._id)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    // Find the correct section
+    const section = course.content.find(
+      (sec) => String(sec._id) === String(sectionId)
+    );
+
+    if (!section) {
+      return res.status(404).json({ error: "Section not found" });
+    }
+
+    // Find the video
+    const videoToDelete = section.videos.find(
+      (vid) => String(vid._id) === String(videoId)
+    );
+
+    if (!videoToDelete) {
+      return res.status(404).json({ error: "Video not found in section" });
+    }
+
+    // Delete from Cloudinary
+    await cloudinary.uploader.destroy(videoToDelete.publicId, {
+      resource_type: "video",
+    });
+
+    // Remove video from array
+    section.videos = section.videos.filter(
+      (vid) => String(vid._id) !== String(videoId)
+    );
+
+    await course.save();
+
+    res.status(200).json({ message: "✅ Lecture deleted from section" });
+  } catch (error) {
+    console.error("❌ Error deleting video:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
+
 
 export const getAllMyCreatedCourses = async (req, res) => {
     try {

@@ -15,7 +15,7 @@ router.delete("/:courseId/delete-course",protectRoute,isInstructor,deleteCourse)
 router.post("/:courseId/add-section", protectRoute, isInstructor, addSectionToCourse)
 router.delete("/:courseId/delete-video/:sectionId",protectRoute,isInstructor, deleteSectionFromCourse);
 router.post("/:courseId/section/:sectionId/add-video",protectRoute,isInstructor,uploadVideo.single("video"), addVideoToSection);
-router.delete("/:courseId/delete-video/:videoId",protectRoute,isInstructor, deleteVideoFromCourse);
+router.delete("/:courseId/section/:sectionId/video/:videoId",protectRoute,isInstructor, deleteVideoFromCourse);
 router.get("/instructor/courses",protectRoute,isInstructor,getAllMyCreatedCourses);
 router.post("/:courseId/add-review", protectRoute, addreviewToCourse);
 router.get("/:courseId/show-review", protectRoute, showReviewToCourse);

@@ -8,8 +8,8 @@ export const useCourseStore = create((set, get) => ({
     myCreatedCourse: [],
     enrolledStudents: [],
     deletingCourseId: null,
-    deleteInSectionId:null,
-    deleteVideoId:null,
+    deleteSectionId: null,
+    deleteVideoId: null,
     isCreatingCourse: false,
     isCreatingSection: false,
     isAddingVideo: false,
@@ -43,22 +43,7 @@ export const useCourseStore = create((set, get) => ({
 
     },
 
-    deleteCourse: async (courseId) => {
-        set({ deletingCourseId: courseId })
-        try {
-            const res = await axiosInstance.delete(`/course/${courseId}/delete-course`)
-            toast.success(res.data.message);
-            get().getMyCreatedCourse(); //refersh th course list
-        } catch (error) {
-            const errMsg = error?.response?.data?.error || "failed to delete"
-            console.log("Error in deleteCourse: ", errMsg);
-            toast.error(errMsg)
 
-        }
-        finally {
-            set({ deletingCourseId: null, });
-        }
-    },
 
     createSection: async (courseId, data) => {
         set({ isCreatingSection: true });
@@ -108,8 +93,35 @@ export const useCourseStore = create((set, get) => ({
         }
     },
 
-    deleteSection: async(sectionId)=>{
+    deleteCourse: async (courseId) => {
+        set({ deletingCourseId: courseId })
+        try {
+            const res = await axiosInstance.delete(`/course/${courseId}/delete-course`)
+            toast.success(res.data.message);
+            get().getMyCreatedCourse(); //refersh th course list
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "failed to delete"
+            console.log("Error in deleteCourse: ", errMsg);
+            toast.error(errMsg)
 
-    }
+        }
+        finally {
+            set({ deletingCourseId: null, });
+        }
+    },
+    deleteSection: async (courseId, sectionId) => {
+        set({ deleteSectionId: sectionId })
+        try {
+            const res = await axiosInstance.delete(`/course/${courseId}/delete-video/${sectionId}`)
+            toast.success(res.data.message);
+            get().getMyCreatedCourse();
+        } catch (error) {
+            const errMsg = error?.response?.data.error || "Failed to delete section";
+            console.log("Error in deleteSection: ", errMsg);
+            toast.error(errMsg);
+        }
+    },
+
+    // deleteVideo: async()
 
 }))
