@@ -136,39 +136,31 @@ export const addVideoToSection = async (req, res) => {
     const videoUrl = req.file?.path;
     const publicId = req.file?.filename;
 
-    if (!videoUrl || !title || !sectionId || !publicId) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+    if (!title) return res.status(400).json({ error: "Title is required" });
+    if (!duration) return res.status(400).json({ error: "Duration is required" });
+    if (!videoUrl || !publicId) return res.status(400).json({ error: "Video upload failed" });
+    if (!sectionId) return res.status(400).json({ error: "Section ID is missing" });
 
     const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ error: "Course not found" });
-    }
+    if (!course) return res.status(404).json({ error: "Course not found" });
 
     if (String(course.instructor) !== String(req.user._id)) {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    // 🔍 Find section by its _id
     const sectionIndex = course.content.findIndex(
       sec => String(sec._id) === String(sectionId)
     );
 
-    if (sectionIndex === -1) {
-      return res.status(404).json({ error: "Section not found" });
-    }
+    if (sectionIndex === -1) return res.status(404).json({ error: "Section not found" });
 
-    // ✅ Add video to the correct section
-    course.content[sectionIndex].videos.push({
-      title,
-      videoUrl,
-      publicId,
-      duration,
-    });
+    const section = course.content[sectionIndex];
+    if (!section.videos) section.videos = [];
 
+    section.videos.push({ title, videoUrl, publicId, duration });
     await course.save();
 
-    res.status(200).json({ message: " Video added to section", course });
+    res.status(200).json({ message: "Video added to section", section });
   } catch (error) {
     console.error("❌ Error in addVideoToSection:", error.message);
     res.status(500).json({ error: "Internal server error" });

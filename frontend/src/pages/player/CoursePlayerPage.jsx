@@ -13,7 +13,8 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useEffect } from 'react';
 
 const CoursePlayerPage = () => {
-    const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse } = useCourseStore();
+    const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
+        addVideoToSection, isAddingVideo } = useCourseStore();
 
 
     const [createSeaction, setCreateSection] = useState(false);
@@ -24,14 +25,11 @@ const CoursePlayerPage = () => {
     const [selectedRating, setSelectedRating] = useState(0);
     const [comment, setComment] = useState("");
     const { courseId } = useParams();
-    const [video, setVideo] = useState(null);
     const [videoURL, setVideoURL] = useState(null);
     const videoRef = useRef(null);
-    const [formData, setFormData] = useState({
-        title: "",
-        duration: "",
-        video: ""
-    })
+    const [sectionId, setSectionId] = useState("");
+    const [formData, setFormData] = useState({ title: "", duration: "", video: null })
+
 
 
     const currCourse = myCreatedCourse?.find((course) => course._id === courseId)
@@ -40,6 +38,7 @@ const CoursePlayerPage = () => {
     const handleClick = (value) => {
         setSelectedRating(value);
     };
+
     const handleComment = () => {
 
         if (!selectedRating) {
@@ -61,15 +60,19 @@ const CoursePlayerPage = () => {
         }));
     }
 
-    const handleAddVideo = (e) => {
+    const handleAddVideo = async (e) => {
         e.preventDefault();
 
-        const payload = {
-            ...formData,
-            video: videoURL,
-        }
+        await addVideoToSection(courseId, sectionId, formData)
+        console.log(formData, sectionId);
 
-    }
+        // Reset form fields
+        setFormData({ title: "", duration: "", video: null });
+        setSectionId("");
+        setVideoURL(null);
+        setAddVideoModal(false);
+    };
+
 
     const handleCreateSection = async (e) => {
         e.preventDefault();
@@ -80,12 +83,12 @@ const CoursePlayerPage = () => {
 
     const handleVideoChange = (e) => {
         const file = e.target.files[0];
-        if (file && file.type === "video/mp4") {
-            setVideo(file);
-            setVideoURL(URL.createObjectURL(file)); // blob URL for preview
-        } else {
-            alert("Please upload a .mp4 file");
-        }
+        setVideoURL(URL.createObjectURL(file)); // blob URL for preview
+        setFormData((prev) => ({
+            ...prev,
+            video: file, // ✅ include the File object in your formData
+        }));
+
     };
 
 
@@ -149,7 +152,7 @@ const CoursePlayerPage = () => {
                                 </div>
                                 <input
                                     type="file"
-                                    accept="video/mp4"
+                                    accept="video/*"
                                     hidden
                                     ref={videoRef}
                                     onChange={handleVideoChange}
@@ -195,8 +198,9 @@ const CoursePlayerPage = () => {
                         <button
                             type="submit"
                             className="btn btn-primary hover:bg-black text-white px-4 py-2 rounded-md"
+                            disabled={isAddingVideo}
                         >
-                            Add
+                            {isAddingVideo ? <><LoadingSpinner /> Adding...</> : "Add"}
                         </button>
                     </form>
                 </div>
@@ -245,23 +249,23 @@ const CoursePlayerPage = () => {
                                         <h1 className='text-xl font-bold text-zinc-700'>{section.sectionTitle}</h1>
                                     </div>
                                     <button className='btn bg-zinc-700 text-white hover:bg-black '
-                                        onClick={() => { setAddVideoModal(!addVideoModal) }}
+                                        onClick={() => {
+                                            setAddVideoModal(!addVideoModal)
+                                            setSectionId(section._id);
+                                        }}
                                     >
                                         Add video
                                     </button>
                                 </div>
 
 
-                                <div
-                                    className={`overflow-hidden transition-max-h duration-500 ease-in-out
-                                            ${openSection[index] ? "max-h-[1000px]" : "max-h-0"}`
-                                        }
+                                <div  className={`overflow-hidden transition-all duration-500 ease-in-out
+                                    ${openSection[index] ? "max-h-[9999px] opacity-100" : "max-h-0 opacity-0"}`}
                                 >
-
-                                    {section?.videos?.length === 0 &&
-
+                                    {section?.videos?.length === 0 && (
                                         <p className="text-center text-gray-500 italic p-5">No videos added in this section</p>
-                                    }
+                                    )}
+
                                     {section?.videos.map((video, idx) => (
 
                                         <div key={video.publicId || idx} className='py-[10px] px-[30px] gap-2 flex items-center justify-between w-full'>

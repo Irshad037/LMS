@@ -9,8 +9,8 @@ export const useCourseStore = create((set, get) => ({
     enrolledStudents: [],
     deletingCourseId: null,
     isCreatingCourse: false,
-    isCreatingSection:false,
-    isAddingVideo:false,
+    isCreatingSection: false,
+    isAddingVideo: false,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -28,71 +28,80 @@ export const useCourseStore = create((set, get) => ({
     },
 
     getMyCreatedCourse: async () => {
-       
+
         try {
             const res = await axiosInstance.get('/course/instructor/courses')
-            set({ myCreatedCourse: res.data.courses});
+            set({ myCreatedCourse: res.data.courses });
             console.log("API response", res.data.courses);
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to create course";
             toast.error(errMsg)
             console.log("Error in getMyCreatedCourse:", errMsg);
-            
+
         }
 
     },
 
-    deleteCourse: async (courseId)=>{ 
-        set({deletingCourseId: courseId})
+    deleteCourse: async (courseId) => {
+        set({ deletingCourseId: courseId })
         try {
             const res = await axiosInstance.delete(`/course/${courseId}/delete-course`)
             toast.success(res.data.message);
             get().getMyCreatedCourse(); //refersh th course list
         } catch (error) {
             const errMsg = error?.response?.data?.error || "failed to delete"
-            console.log("Error in deleteCourse: " ,errMsg);
+            console.log("Error in deleteCourse: ", errMsg);
             toast.error(errMsg)
-            
+
         }
-        finally{
-            set({deletingCourseId: null,});
+        finally {
+            set({ deletingCourseId: null, });
         }
     },
 
-    createSection: async(courseId, data)=>{
-        set({isCreatingSection: true});
+    createSection: async (courseId, data) => {
+        set({ isCreatingSection: true });
         try {
             const res = await axiosInstance.post(`/course/${courseId}/add-section`, data);
             toast.success(res.data.message);
         } catch (error) {
             const errMsd = error?.response?.data?.error || "Failed to create section";
-            console.log("Error in createSection:", errMsd); 
+            console.log("Error in createSection:", errMsd);
             toast.error(errMsd);
         }
-        finally{
-            set({isCreatingSection: false})
+        finally {
+            set({ isCreatingSection: false })
         }
     },
 
-    addVideoToSection: async(courseId, sectionId, data)=>{
-        set({isAddingVideo:true});
+    addVideoToSection: async (courseId, sectionId, data) => {
+        set({ isAddingVideo: true });
         try {
-            const res = await axiosInstance.post(`/course/${courseId}/section/${sectionId}/add-video`, data)
+            const res = await axiosInstance.post(`/course/${courseId}/section/${sectionId}/add-video`, data,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            )
             toast.success(res.data.message);
+            get().getMyCreatedCourse(); // refresh the course list
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to add video to section";
-            console.log("Error in addVideoToSection",errMsg);
+            console.log("Error in addVideoToSection", errMsg);
             toast.error(errMsg);
+        } finally {
+            set({ isAddingVideo: false });
         }
     },
 
-    getNoOfStudentEnrolled: async()=>{
+    getNoOfStudentEnrolled: async () => {
         try {
             const res = await axiosInstance.get('/course/enrolledStudent')
-            set({enrolledStudents: res.data.students})
+            set({ enrolledStudents: res.data.students })
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to fetch enrolled students";
-            console.log("Error in getNoOfStudentEnrolled:", errMsg);    
+            console.log("Error in getNoOfStudentEnrolled:", errMsg);
             toast.error(errMsg);
         }
     }
