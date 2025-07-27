@@ -7,12 +7,12 @@ import axios from 'axios';
 export const useCourseStore = create((set, get) => ({
     myCreatedCourse: [],
     enrolledStudents: [],
-    deletingCourseId: null,
-    deleteSectionId: null,
-    deleteVideoId: null,
     isCreatingCourse: false,
     isCreatingSection: false,
     isAddingVideo: false,
+    deletingCourseId: null,
+    deleteSectionId: null,
+    deleteVideoId: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -109,10 +109,11 @@ export const useCourseStore = create((set, get) => ({
             set({ deletingCourseId: null, });
         }
     },
+    
     deleteSection: async (courseId, sectionId) => {
         set({ deleteSectionId: sectionId })
         try {
-            const res = await axiosInstance.delete(`/course/${courseId}/delete-video/${sectionId}`)
+            const res = await axiosInstance.delete(`/course/${courseId}/delete-section/${sectionId}`)
             toast.success(res.data.message);
             get().getMyCreatedCourse();
         } catch (error) {
@@ -120,8 +121,25 @@ export const useCourseStore = create((set, get) => ({
             console.log("Error in deleteSection: ", errMsg);
             toast.error(errMsg);
         }
+        finally{
+            set({deleteSectionId:null});
+        }
     },
 
-    // deleteVideo: async()
+    deleteVideo: async(courseId, sectionId,videoId)=>{
+        set({deleteVideoId:videoId});
+        try {
+            const res = await axiosInstance.delete(`/course/${courseId}/section/${sectionId}/video/${videoId}`)
+            toast.success(res.data.message);
+            get().getMyCreatedCourse();
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to delete video";
+            console.log("Error in deleteVideo: ", errMsg);      
+            toast.error(errMsg);
+        }
+        finally{
+            set({deleteVideoId:null});
+        }
+    }
 
 }))

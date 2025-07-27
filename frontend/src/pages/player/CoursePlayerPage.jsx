@@ -14,7 +14,7 @@ import { useEffect } from 'react';
 
 const CoursePlayerPage = () => {
     const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
-        addVideoToSection, isAddingVideo } = useCourseStore();
+        addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId, } = useCourseStore();
 
 
     const [createSeaction, setCreateSection] = useState(false);
@@ -30,7 +30,7 @@ const CoursePlayerPage = () => {
     const videoRef = useRef(null);
     const [sectionId, setSectionId] = useState("");
     const [formData, setFormData] = useState({ title: "", duration: "", video: null })
-    const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "",Sidx:Number,Vidx:Number });
+    const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "", Sidx: Number, Vidx: Number });
 
 
 
@@ -74,7 +74,6 @@ const CoursePlayerPage = () => {
         setVideoURL(null);
         setAddVideoModal(false);
     };
-
 
     const handleCreateSection = async (e) => {
         e.preventDefault();
@@ -239,7 +238,11 @@ const CoursePlayerPage = () => {
 
                             <div
                                 className='basis-[10%] mt-4 p-4 w-[58px] h-[60px] border border-zinc-300 shadow-xl rounded-l-md bg-white flex items-center justify-center'>
-                                <MdDeleteForever size={25} className='cursor-pointer hover:text-red-700' />
+                                <MdDeleteForever size={25} className='cursor-pointer hover:text-red-700'
+                                    onClick={async () => {
+                                        const confirmDelete = window.confirm("Are you sure you want to delete this section?");
+                                    }}
+                                />
                             </div>
 
                             <div className='basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white rounded-r-md rounded-b-md'>
@@ -288,15 +291,31 @@ const CoursePlayerPage = () => {
                                                         setCurrVideoInfo({
                                                             title: video.title,
                                                             videoUrl: video.videoUrl,
-                                                            Vidx:idx,
-                                                            Sidx:index
+                                                            Vidx: idx,
+                                                            Sidx: index
                                                         })
                                                     }}
                                                 >
                                                     Watch
                                                 </div>
                                                 <div className='text-base font-semibold text-zinc-600'>{video.duration} Minutes</div>
-                                                <MdDeleteForever size={19} className='text-red-700 cursor-pointer hover:text-red-950' />
+                                                
+                                                {deleteVideoId === video._id ? (
+                                                    <LoadingSpinner size={16} />
+                                                ) : (
+                                                    <MdDeleteForever
+                                                        size={19}
+                                                        className="text-red-700 cursor-pointer hover:text-red-950"
+                                                        onClick={async () => {
+                                                            const confirmDelete = window.confirm("Are you sure you want to delete this lecture?");
+                                                            if (confirmDelete) {
+                                                                await deleteVideo(currCourse._id, section._id, video._id);
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+
+
                                             </div>
 
                                         </div>
@@ -326,23 +345,23 @@ const CoursePlayerPage = () => {
 
                     {playLecture && (
                         <div className="w-full bg-white rounded-xl border border-zinc-300 shadow-sm overflow-hidden">
-  <video
-    controls
-    className="w-full aspect-video object-cover"
-    src={currVideoInfo.videoUrl}
-  >
-    Your browser does not support the video tag.
-  </video>
+                            <video
+                                controls
+                                className="w-full aspect-video object-cover"
+                                src={currVideoInfo.videoUrl}
+                            >
+                                Your browser does not support the video tag.
+                            </video>
 
-  <div className="p-4 bg-zinc-50 flex items-center gap-2">
-    <span className="text-xl font-semibold text-zinc-500">
-      {currVideoInfo.Sidx + 1}.{currVideoInfo.Vidx + 1}
-    </span>
-    <h2 className="text-xl font-bold text-zinc-700 truncate">
-      {currVideoInfo.title}
-    </h2>
-  </div>
-</div>
+                            <div className="p-4 bg-zinc-50 flex items-center gap-2">
+                                <span className="text-xl font-semibold text-zinc-500">
+                                    {currVideoInfo.Sidx + 1}.{currVideoInfo.Vidx + 1}
+                                </span>
+                                <h2 className="text-xl font-bold text-zinc-700 truncate">
+                                    {currVideoInfo.title}
+                                </h2>
+                            </div>
+                        </div>
 
 
                     )}
