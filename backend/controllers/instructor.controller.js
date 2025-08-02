@@ -1,5 +1,6 @@
 import { cloudinary } from "../config/cloudinary.js";
 import Course from "../models/course.model.js";
+import User from "../models/user.model.js";
 
 export const createCourse = async (req, res) => {
     try {
@@ -271,6 +272,37 @@ export const addreviewToCourse = async (req, res) => {
         res.status(500).json({ error: " Internal server error" });
     }
 }
+
+export const deleteMyReview = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { courseId, reviewId } = req.params;
+
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ error: "Course not found" });
+
+        // Find the review
+        const review = course.reviews.find((rev) => String(rev._id) === String(reviewId));
+        if (!review) return res.status(404).json({ error: "Review not found" });
+
+        // Check ownership
+        if (String(review.user) !== String(userId)) {
+            return res.status(403).json({ error: "You are not the owner of this review" });
+        }
+
+        // Remove the review
+        course.reviews = course.reviews.filter(
+            (rev) => String(rev._id) !== String(reviewId)
+        );
+
+        await course.save();
+
+        res.status(200).json({ message: "Review deleted successfully" });
+    } catch (error) {
+        console.error("Error in deleteMyReview:", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 export const showReviewToCourse = async (req, res) => {
     try {

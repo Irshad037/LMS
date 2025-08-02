@@ -5,7 +5,7 @@ import { uploadVideo } from "../middleware/upload.js";
 import { 
     addreviewToCourse, createCourse, deleteCourse, showReviewToCourse,
     deleteVideoFromCourse, getAllMyCreatedCourses, showAllCourse,searchCourse,addVideoToSection,
-    addSectionToCourse,deleteSectionFromCourse ,NoOfStudentEnrolled
+    addSectionToCourse,deleteSectionFromCourse ,NoOfStudentEnrolled,deleteMyReview
 } from '../controllers/instructor.controller.js';
 
 const router = express.Router();
@@ -18,7 +18,8 @@ router.post("/:courseId/section/:sectionId/add-video",protectRoute,isInstructor,
 router.delete("/:courseId/section/:sectionId/video/:videoId",protectRoute,isInstructor, deleteVideoFromCourse);
 router.get("/instructor/courses",protectRoute,isInstructor,getAllMyCreatedCourses);
 router.post("/:courseId/add-review", protectRoute, addreviewToCourse);
-router.get("/:courseId/show-review", protectRoute, showReviewToCourse);
+router.delete("/:courseId/delete-review/:reviewId", protectRoute, deleteMyReview);
+router.get("/:courseId/show-review/", protectRoute, showReviewToCourse);
 router.get("/all-courses", protectRoute, showAllCourse);
 router.get("/enrolledStudent", protectRoute,NoOfStudentEnrolled)
 router.get("/search", protectRoute, searchCourse)
