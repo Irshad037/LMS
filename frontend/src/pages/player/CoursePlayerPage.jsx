@@ -13,8 +13,11 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import useAuthStore from '../../store/useAuthStore';
 
 const CoursePlayerPage = () => {
+
     const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
-        addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId, } = useCourseStore();
+        addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId,
+        addreview, isAddingReview
+    } = useCourseStore();
 
     const { authUser } = useAuthStore();
 
@@ -38,18 +41,17 @@ const CoursePlayerPage = () => {
     const currCourse = myCreatedCourse?.find((course) => course._id === courseId);
     const contents = currCourse?.content || [];
 
-    const handleClick = (value) => {
+    const handleStarClick = (value) => {
         setSelectedRating(value);
     };
 
-    const handleComment = () => {
+    const handleComment = async () => {
 
-        if (!selectedRating) {
-            alert("Please provide Rating");
-            return;
+        const payload = {
+            rating:selectedRating,
+            comment:comment
         }
-
-        // TODO: send `selectedRating` and `comment` to backend (API)
+        await addreview(courseId,payload);
         console.log("Rating:", selectedRating);
         console.log("Comment:", comment);
 
@@ -98,11 +100,6 @@ const CoursePlayerPage = () => {
         getMyCreatedCourse();
     }, []);
 
-    useEffect(() => {
-        if (currCourse) {
-            console.log("Instructor Info:", currCourse.instructor);
-        }
-    }, [myCreatedCourse, courseId]);
 
     return (
         <div className='px-[130px] py-[70px] my-9 flex items-center flex-col relative'>
@@ -215,6 +212,7 @@ const CoursePlayerPage = () => {
             )}
 
             <div className='flex items-center justify-between gap-10 w-full'>
+
                 <div className='flex items-center flex-col  basis-[50%] '>
 
                     <div className=' mb-2 w-full  flex items-center justify-between'>
@@ -231,7 +229,6 @@ const CoursePlayerPage = () => {
 
                     </div>
 
-
                     {contents.length === 0 && (
                         <div className='w-full h-32 bg-white mt-10 p-6 rounded-md shadow-xl'>
                             <div className='bg-slate-200 w-full h-full rounded-md shadow-inner flex items-center justify-center'>
@@ -240,7 +237,6 @@ const CoursePlayerPage = () => {
                         </div>
 
                     )}
-
 
                     {contents.map((section, index) => (
 
@@ -266,7 +262,6 @@ const CoursePlayerPage = () => {
                                 </>
 
                             )}
-
 
                             <div className={`basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white ${authUser._id != currCourse?.instructor ? "rounded-md" : "rounded-r-md"} `}>
 
@@ -356,15 +351,12 @@ const CoursePlayerPage = () => {
 
                             </div>
 
-
-
                         </div>
 
 
                     ))}
 
                 </div>
-
 
                 <div className=' flex-1 mt-16 '>
                     {!playLecture && (
@@ -398,9 +390,6 @@ const CoursePlayerPage = () => {
 
                 </div>
 
-
-
-
             </div>
 
             <div className='w-full mt-14 flex items-center justify-center'>
@@ -415,10 +404,10 @@ const CoursePlayerPage = () => {
                                     size={24}
                                     className={
                                         (hoveredStar || selectedRating) >= value
-                                            ? "text-yellow-500"
-                                            : "text-white"
+                                            ? "text-yellow-500 "
+                                            : "text-white "
                                     }
-                                    onClick={() => handleClick(value)}
+                                    onClick={() => handleStarClick(value)}
                                     onMouseEnter={() => setHoveredStar(value)}
                                     onMouseLeave={() => setHoveredStar(0)}
                                 />
@@ -440,11 +429,13 @@ const CoursePlayerPage = () => {
                         onClick={handleComment}
                         className="mt-3 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
-                        Submit Review
+                        {
+                            isAddingReview?(<> <LoadingSpinner /> "Adding..."</>):"Submit Review"
+                        }
+                        
                     </button>
                 </div>
             </div>
-
 
         </div >
 

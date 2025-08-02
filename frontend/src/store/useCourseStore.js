@@ -10,6 +10,7 @@ export const useCourseStore = create((set, get) => ({
     isCreatingCourse: false,
     isCreatingSection: false,
     isAddingVideo: false,
+    isAddingReview: false,
     deletingCourseId: null,
     deleteSectionId: null,
     deleteVideoId: null,
@@ -107,7 +108,7 @@ export const useCourseStore = create((set, get) => ({
             set({ deletingCourseId: null, });
         }
     },
-    
+
     deleteSection: async (courseId, sectionId) => {
         set({ deleteSectionId: sectionId })
         try {
@@ -119,24 +120,39 @@ export const useCourseStore = create((set, get) => ({
             console.log("Error in deleteSection: ", errMsg);
             toast.error(errMsg);
         }
-        finally{
-            set({deleteSectionId:null});
+        finally {
+            set({ deleteSectionId: null });
         }
     },
 
-    deleteVideo: async(courseId, sectionId,videoId)=>{
-        set({deleteVideoId:videoId});
+    deleteVideo: async (courseId, sectionId, videoId) => {
+        set({ deleteVideoId: videoId });
         try {
             const res = await axiosInstance.delete(`/course/${courseId}/section/${sectionId}/video/${videoId}`)
             toast.success(res.data.message);
             get().getMyCreatedCourse();
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to delete video";
-            console.log("Error in deleteVideo: ", errMsg);      
+            console.log("Error in deleteVideo: ", errMsg);
             toast.error(errMsg);
         }
-        finally{
-            set({deleteVideoId:null});
+        finally {
+            set({ deleteVideoId: null });
+        }
+    },
+
+    addreview: async (courseId, data) => {
+        set({ isAddingReview: true })
+        try {
+            const res = await axiosInstance.post(`/course/${courseId}/add-review`, data)
+            toast.success(res.data.message)
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to review course";
+            console.log("error in addreview: ", errMsg);
+            toast.error(errMsg);
+        }
+        finally {
+            set({ isAddingReview: false });
         }
     }
 

@@ -130,92 +130,92 @@ export const deleteSectionFromCourse = async (req, res) => {
 };
 
 export const addVideoToSection = async (req, res) => {
-  try {
-    const { courseId, sectionId } = req.params;
-    const { title, duration } = req.body;
-    const videoUrl = req.file?.path;
-    const publicId = req.file?.filename;
+    try {
+        const { courseId, sectionId } = req.params;
+        const { title, duration } = req.body;
+        const videoUrl = req.file?.path;
+        const publicId = req.file?.filename;
 
-    if (!title) return res.status(400).json({ error: "Title is required" });
-    if (!duration) return res.status(400).json({ error: "Duration is required" });
-    if (!videoUrl || !publicId) return res.status(400).json({ error: "Video upload failed" });
-    if (!sectionId) return res.status(400).json({ error: "Section ID is missing" });
+        if (!title) return res.status(400).json({ error: "Title is required" });
+        if (!duration) return res.status(400).json({ error: "Duration is required" });
+        if (!videoUrl || !publicId) return res.status(400).json({ error: "Video upload failed" });
+        if (!sectionId) return res.status(400).json({ error: "Section ID is missing" });
 
-    const course = await Course.findById(courseId);
-    if (!course) return res.status(404).json({ error: "Course not found" });
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ error: "Course not found" });
 
-    if (String(course.instructor) !== String(req.user._id)) {
-      return res.status(403).json({ error: "Unauthorized" });
+        if (String(course.instructor) !== String(req.user._id)) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        const sectionIndex = course.content.findIndex(
+            sec => String(sec._id) === String(sectionId)
+        );
+
+        if (sectionIndex === -1) return res.status(404).json({ error: "Section not found" });
+
+        const section = course.content[sectionIndex];
+        if (!section.videos) section.videos = [];
+
+        section.videos.push({ title, videoUrl, publicId, duration });
+        await course.save();
+
+        res.status(200).json({ message: "Video added to section", section });
+    } catch (error) {
+        console.error("❌ Error in addVideoToSection:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-    const sectionIndex = course.content.findIndex(
-      sec => String(sec._id) === String(sectionId)
-    );
-
-    if (sectionIndex === -1) return res.status(404).json({ error: "Section not found" });
-
-    const section = course.content[sectionIndex];
-    if (!section.videos) section.videos = [];
-
-    section.videos.push({ title, videoUrl, publicId, duration });
-    await course.save();
-
-    res.status(200).json({ message: "Video added to section", section });
-  } catch (error) {
-    console.error("❌ Error in addVideoToSection:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
 
 export const deleteVideoFromCourse = async (req, res) => {
-  try {
-    const { courseId, sectionId, videoId } = req.params;
+    try {
+        const { courseId, sectionId, videoId } = req.params;
 
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ error: "Course not found" });
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: "Course not found" });
+        }
+
+        // Check instructor ownership
+        if (String(course.instructor) !== String(req.user._id)) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        // Find the correct section
+        const section = course.content.find(
+            (sec) => String(sec._id) === String(sectionId)
+        );
+
+        if (!section) {
+            return res.status(404).json({ error: "Section not found" });
+        }
+
+        // Find the video
+        const videoToDelete = section.videos.find(
+            (vid) => String(vid._id) === String(videoId)
+        );
+
+        if (!videoToDelete) {
+            return res.status(404).json({ error: "Video not found in section" });
+        }
+
+        // Delete from Cloudinary
+        await cloudinary.uploader.destroy(videoToDelete.publicId, {
+            resource_type: "video",
+        });
+
+        // Remove video from array
+        section.videos = section.videos.filter(
+            (vid) => String(vid._id) !== String(videoId)
+        );
+
+        await course.save();
+
+        res.status(200).json({ message: "Lecture deleted from section" });
+    } catch (error) {
+        console.error("❌ Error deleting video:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
-
-    // Check instructor ownership
-    if (String(course.instructor) !== String(req.user._id)) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    // Find the correct section
-    const section = course.content.find(
-      (sec) => String(sec._id) === String(sectionId)
-    );
-
-    if (!section) {
-      return res.status(404).json({ error: "Section not found" });
-    }
-
-    // Find the video
-    const videoToDelete = section.videos.find(
-      (vid) => String(vid._id) === String(videoId)
-    );
-
-    if (!videoToDelete) {
-      return res.status(404).json({ error: "Video not found in section" });
-    }
-
-    // Delete from Cloudinary
-    await cloudinary.uploader.destroy(videoToDelete.publicId, {
-      resource_type: "video",
-    });
-
-    // Remove video from array
-    section.videos = section.videos.filter(
-      (vid) => String(vid._id) !== String(videoId)
-    );
-
-    await course.save();
-
-    res.status(200).json({ message: "Lecture deleted from section" });
-  } catch (error) {
-    console.error("❌ Error deleting video:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
 };
 
 
@@ -262,14 +262,10 @@ export const addreviewToCourse = async (req, res) => {
 
 
 
-        course.averageRating =
-            course.reviews.reduce((acc, r) => acc + r.rating, 0) / course.reviews.length;
-
-
-
+        course.averageRating = course.reviews.reduce((acc, r) => acc + r.rating, 0) / course.reviews.length;
         await course.save();
 
-        res.status(200).json({ message: "✅ Review added successfully", course });
+        res.status(200).json({ message: "Review added successfully", course });
     } catch (error) {
         console.log(" Error in addreviewToCourse controller");
         res.status(500).json({ error: " Internal server error" });
@@ -349,7 +345,7 @@ export const NoOfStudentEnrolled = async (req, res) => {
         const students = [];
 
         courses.forEach(course => {
-            
+
             course.enrolledStudents.forEach(({ student, enrolledAt }) => {
                 if (student) {
                     students.push({
