@@ -1,21 +1,22 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { useEffect } from 'react';
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { TbPlayerPlayFilled } from "react-icons/tb";
-import { dummyCoursesPlayer } from '../../assets/assets'
-import cross_icon from '../../assets/cross_icon.svg'
-import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
 import { MdDeleteForever } from "react-icons/md";
-import file_upload_icon from '../../assets/file_upload_icon.svg'
 import { IoCloseSharp } from "react-icons/io5";
 import { useCourseStore } from '../../store/useCourseStore';
 import { useParams } from 'react-router-dom';
+import file_upload_icon from '../../assets/file_upload_icon.svg'
+import cross_icon from '../../assets/cross_icon.svg'
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import { useEffect } from 'react';
+import useAuthStore from '../../store/useAuthStore';
 
 const CoursePlayerPage = () => {
     const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
         addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId, } = useCourseStore();
 
+    const { authUser } = useAuthStore();
 
     const [createSeaction, setCreateSection] = useState(false);
     const [addVideoModal, setAddVideoModal] = useState(false);
@@ -30,11 +31,11 @@ const CoursePlayerPage = () => {
     const videoRef = useRef(null);
     const [sectionId, setSectionId] = useState("");
     const [formData, setFormData] = useState({ title: "", duration: "", video: null })
-    const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "", Sidx: Number, Vidx: Number });
+    const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "", Sidx: 0, Vidx: 0 });
 
 
 
-    const currCourse = myCreatedCourse?.find((course) => course._id === courseId)
+    const currCourse = myCreatedCourse?.find((course) => course._id === courseId);
     const contents = currCourse?.content || [];
 
     const handleClick = (value) => {
@@ -95,7 +96,13 @@ const CoursePlayerPage = () => {
 
     useEffect(() => {
         getMyCreatedCourse();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (currCourse) {
+            console.log("Instructor Info:", currCourse.instructor);
+        }
+    }, [myCreatedCourse, courseId]);
 
     return (
         <div className='px-[130px] py-[70px] my-9 flex items-center flex-col relative'>
@@ -169,7 +176,6 @@ const CoursePlayerPage = () => {
                                     <IoCloseSharp
                                         className="absolute top-2 right-2 text-white bg-gray-700 rounded-full w-6 h-6 p-1 cursor-pointer z-10 pointer-events-auto"
                                         onClick={() => {
-                                            setVideo(null);
                                             setVideoURL(null);
                                             videoRef.current.value = null;
                                         }}
@@ -211,14 +217,18 @@ const CoursePlayerPage = () => {
             <div className='flex items-center justify-between gap-10 w-full'>
                 <div className='flex items-center flex-col  basis-[50%] '>
 
-                    <div className=' mb-2 w-full flex items-center justify-between'>
+                    <div className=' mb-2 w-full  flex items-center justify-between'>
                         <h1 className='text-2xl font-bold '>Course Structure</h1>
-                        <button
-                            onClick={() => setCreateSection(!createSeaction)}
-                            className='btn btn-primary '
-                        >
-                            Create Section
-                        </button>
+
+                        {authUser._id === currCourse?.instructor && (
+                            <button
+                                onClick={() => setCreateSection(!createSeaction)}
+                                className='btn btn-primary '
+                            >
+                                Create Section
+                            </button>
+                        )}
+
                     </div>
 
 
@@ -234,27 +244,33 @@ const CoursePlayerPage = () => {
 
                     {contents.map((section, index) => (
 
-                        <div key={index} className='w-full flex justify-between '>
+                        <div key={index} className='w-full h-full flex justify-between '>
 
-                            {deleteSectionId == section._id ?(<LoadingSpinner size={16} />) :
-                                
-                                (<div
-                                        className='basis-[10%] mt-4 p-4 w-[58px] h-[60px] border border-zinc-300 shadow-xl rounded-l-md bg-white flex items-center justify-center'>
-                                        <MdDeleteForever size={25} className='cursor-pointer hover:text-red-700'
-                                            onClick={async () => {
-                                                const confirmDelete = window.confirm("Are you sure you want to delete this section?");
-                                                if (confirmDelete) {
-                                                    await deleteSection(currCourse._id, section._id);
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                )
-                            }
+                            {authUser._id === currCourse?.instructor && (
+                                <>
+                                    {deleteSectionId === section._id ? (<LoadingSpinner size={16} />) :
 
-                            <div className='basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white rounded-r-md rounded-b-md'>
+                                        (<div
+                                            className='basis-[10%] mt-4 p-4 w-[58px] h-[60px] border border-zinc-300 shadow-xl rounded-l-md bg-white flex items-center justify-center'>
+                                            <MdDeleteForever size={25} className='cursor-pointer hover:text-red-700'
+                                                onClick={async () => {
+                                                    const confirmDelete = window.confirm("Are you sure you want to delete this section?");
+                                                    if (confirmDelete) {
+                                                        await deleteSection(currCourse._id, section._id);
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        )
+                                    }
+                                </>
 
-                                <div className='flex items-center justify-between w-full border-b border-zinc-500 shadow-lg  p-[10px] gap-4'>
+                            )}
+
+
+                            <div className={`basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white ${authUser._id != currCourse?.instructor ? "rounded-md" : "rounded-r-md"} `}>
+
+                                <div className='flex items-center justify-between w-full h-[60px] border-b border-zinc-500 shadow-lg  p-[10px] gap-4'>
                                     <div className='flex items-center flex-1 gap-2'>
                                         <button onClick={() => toggleSection(index)}>
                                             {openSection[index] ? <FaChevronUp /> : <FaChevronDown />}
@@ -262,14 +278,18 @@ const CoursePlayerPage = () => {
 
                                         <h1 className='text-xl font-bold text-zinc-700'>{section.sectionTitle}</h1>
                                     </div>
-                                    <button className='btn bg-zinc-700 text-white hover:bg-black '
-                                        onClick={() => {
-                                            setAddVideoModal(!addVideoModal)
-                                            setSectionId(section._id);
-                                        }}
-                                    >
-                                        Add video
-                                    </button>
+
+                                    {authUser._id === currCourse?.instructor && (
+                                        <button className='btn bg-zinc-700 text-white hover:bg-black '
+                                            onClick={() => {
+                                                setAddVideoModal(!addVideoModal)
+                                                setSectionId(section._id);
+                                            }}
+                                        >
+                                            Add video
+                                        </button>
+                                    )}
+
                                 </div>
 
 
@@ -282,9 +302,10 @@ const CoursePlayerPage = () => {
 
                                     {section?.videos.map((video, idx) => (
 
-                                        <div key={video.publicId || idx} className='py-[10px] px-[30px] gap-2 flex items-center justify-between w-full'>
+                                        <div key={video.publicId || idx} className='py-[10px] pl-3 pr-[30px] gap-2 flex items-center justify-between w-full'>
 
                                             <div className=' flex items-center gap-1'>
+                                                <h1 className='text-lg'>{index + 1}.{idx + 1}</h1>.
                                                 <div className='bg-zinc-600 w-5 h-5 flex items-center justify-center rounded-full text-white'>
                                                     <TbPlayerPlayFilled className='w-2' />
                                                 </div>
@@ -307,20 +328,22 @@ const CoursePlayerPage = () => {
                                                 </div>
                                                 <div className='text-base font-semibold text-zinc-600'>{video.duration} Minutes</div>
 
-                                                {deleteVideoId === video._id ? (
-                                                    <LoadingSpinner size={16} />
-                                                ) : (
-                                                    <MdDeleteForever
-                                                        size={19}
-                                                        className="text-red-700 cursor-pointer hover:text-red-950"
-                                                        onClick={async () => {
-                                                            const confirmDelete = window.confirm("Are you sure you want to delete this lecture?");
-                                                            if (confirmDelete) {
-                                                                await deleteVideo(currCourse._id, section._id, video._id);
-                                                            }
-                                                        }}
-                                                    />
-                                                )}
+                                                {authUser._id === currCourse?.instructor && (<>
+                                                    {deleteVideoId === video._id ? (
+                                                        <LoadingSpinner size={16} />
+                                                    ) : (
+                                                        <MdDeleteForever
+                                                            size={19}
+                                                            className="text-red-700 cursor-pointer hover:text-red-950"
+                                                            onClick={async () => {
+                                                                const confirmDelete = window.confirm("Are you sure you want to delete this lecture?");
+                                                                if (confirmDelete) {
+                                                                    await deleteVideo(currCourse._id, section._id, video._id);
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </>)}
 
 
                                             </div>
@@ -423,7 +446,7 @@ const CoursePlayerPage = () => {
             </div>
 
 
-        </div>
+        </div >
 
     )
 }
