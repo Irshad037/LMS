@@ -146,6 +146,7 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post(`/course/${courseId}/add-review`, data)
             toast.success(res.data.message)
+            get().getMyCreatedCourse();
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to review course";
             console.log("error in addreview: ", errMsg);

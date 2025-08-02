@@ -4,11 +4,9 @@ import { dummyCoursesPlayer } from '../../assets/assets';
 import { TbPlayerPlayFilled } from 'react-icons/tb';
 import course from '../../assets/course_1.png'
 import { IoMdStopwatch } from 'react-icons/io';
-import { MdOutlineWatchLater } from 'react-icons/md';
 import { GiOpenBook } from "react-icons/gi";
 
 const PurchasePage = () => {
-    const [createSeaction, setCreateSection] = useState(false);
     const [openSection, setOpenSection] = useState({})
 
     const averageRating = 3.5;

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useEffect } from 'react';
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { TbPlayerPlayFilled } from "react-icons/tb";
-import { FaStar } from 'react-icons/fa';
+import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { MdDeleteForever } from "react-icons/md";
 import { IoCloseSharp } from "react-icons/io5";
 import { useCourseStore } from '../../store/useCourseStore';
@@ -40,6 +40,7 @@ const CoursePlayerPage = () => {
 
     const currCourse = myCreatedCourse?.find((course) => course._id === courseId);
     const contents = currCourse?.content || [];
+    const isReviewed = currCourse?.reviews?.find((review) => review.user === authUser._id);
 
     const handleStarClick = (value) => {
         setSelectedRating(value);
@@ -48,15 +49,19 @@ const CoursePlayerPage = () => {
     const handleComment = async () => {
 
         const payload = {
-            rating:selectedRating,
-            comment:comment
+            rating: selectedRating,
+            comment: comment
         }
-        await addreview(courseId,payload);
+        await addreview(courseId, payload);
         console.log("Rating:", selectedRating);
         console.log("Comment:", comment);
 
         setSelectedRating(0);
         setComment("");
+    }
+
+    const handleDeleteReview =async()=>{
+
     }
 
     const toggleSection = (index) => {
@@ -99,6 +104,10 @@ const CoursePlayerPage = () => {
     useEffect(() => {
         getMyCreatedCourse();
     }, []);
+
+    useEffect(() => {
+        console.log("isReviewed", isReviewed);
+    }, [currCourse]);
 
 
     return (
@@ -211,7 +220,7 @@ const CoursePlayerPage = () => {
                 </div>
             )}
 
-            <div className='flex items-center justify-between gap-10 w-full'>
+            <div className='flex items-center justify-between mb-[70px] gap-10 w-full'>
 
                 <div className='flex items-center flex-col  basis-[50%] '>
 
@@ -392,7 +401,8 @@ const CoursePlayerPage = () => {
 
             </div>
 
-            <div className='w-full mt-14 flex items-center justify-center'>
+            {!isReviewed ? (<div className='w-full mt-14 flex items-center justify-center'>
+
                 <div className='w-[50%]'>
                     {/* Rating */}
                     <div className='flex items-center gap-2'>
@@ -430,12 +440,55 @@ const CoursePlayerPage = () => {
                         className="mt-3 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                         {
-                            isAddingReview?(<> <LoadingSpinner /> "Adding..."</>):"Submit Review"
+                            isAddingReview ? (<> <LoadingSpinner /> "Adding..."</>) : "Submit Review"
                         }
-                        
+
                     </button>
                 </div>
             </div>
+            ) : (
+                <div className="w-full mt-10 flex flex-col items-center">
+                    <div className="w-full max-w-xl bg-white p-6 rounded-xl shadow-md border border-zinc-200 relative">
+
+                        {/* Heading and Rating */}
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-zinc-800">Your Review</h2>
+                            <span className="text-sm text-zinc-500">{isReviewed.rating}/5</span>
+                        </div>
+
+                        {/* Star Rating */}
+                        <div className="flex gap-1 mb-3 text-yellow-500">
+                            {Array.from({ length: 5 }, (_, i) => {
+                                const value = i + 1;
+                                if (isReviewed.rating >= value) {
+                                    return <FaStar key={i} size={22} />;
+                                } else if (isReviewed.rating >= value - 0.5) {
+                                    return <FaStarHalfAlt key={i} size={22} />;
+                                } else {
+                                    return <FaRegStar key={i} size={22} className="text-zinc-400" />;
+                                }
+                            })}
+                        </div>
+
+                        {/* Comment */}
+                        <p className="text-zinc-600 italic bg-zinc-50 px-4 py-3 rounded-md border border-zinc-200">
+                            “{isReviewed.comment}”
+                        </p>
+
+                        {/* Delete Button */}
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                onClick={handleDeleteReview} // <- make sure this function is defined
+                                className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded hover:bg-red-50 hover:border-red-300 transition"
+                            >
+                                Delete Review
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
 
         </div >
 
