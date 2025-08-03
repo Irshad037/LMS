@@ -16,7 +16,7 @@ const CoursePlayerPage = () => {
 
     const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
         addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId,
-        addreview, isAddingReview,deleteReview,isDeletingReview
+        addreview, isAddingReview,deleteReview,isDeletingReview,getAllCourses,AllCourses
     } = useCourseStore();
 
     const { authUser } = useAuthStore();
@@ -37,8 +37,8 @@ const CoursePlayerPage = () => {
     const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "", Sidx: 0, Vidx: 0 });
 
 
-
-    const currCourse = myCreatedCourse?.find((course) => course._id === courseId);
+    //TODO: replace myCreatedCourse with AllCourses
+    const currCourse = AllCourses?.find((course) => course._id === courseId);
     const contents = currCourse?.content || [];
     const isReviewed = currCourse?.reviews?.find((review) => review.user === authUser._id);
 
@@ -61,6 +61,8 @@ const CoursePlayerPage = () => {
     }
 
     const handleDeleteReview =async()=>{
+        const confirmDelete  = window.confirm("Are you sure you want to delete your review?");
+        if (!confirmDelete) return;
         await deleteReview(courseId,isReviewed._id)
     }
 
@@ -102,7 +104,7 @@ const CoursePlayerPage = () => {
 
 
     useEffect(() => {
-        getMyCreatedCourse();
+        getAllCourses()
     }, []);
 
     useEffect(() => {
@@ -290,7 +292,7 @@ const CoursePlayerPage = () => {
                                                 setSectionId(section._id);
                                             }}
                                         >
-                                            Add video
+                                            Add Lecture
                                         </button>
                                     )}
 

@@ -5,8 +5,10 @@ import axios from 'axios';
 
 
 export const useCourseStore = create((set, get) => ({
+    AllCourses: [],
     myCreatedCourse: [],
     enrolledStudents: [],
+    isGetAllCourses: false,
     isCreatingCourse: false,
     isCreatingSection: false,
     isAddingVideo: false,
@@ -50,7 +52,7 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post(`/course/${courseId}/add-section`, data);
             toast.success(res.data.message);
-            get().getMyCreatedCourse()
+            get().getAllCourses()
         } catch (error) {
             const errMsd = error?.response?.data?.error || "Failed to create section";
             console.log("Error in createSection:", errMsd);
@@ -72,7 +74,7 @@ export const useCourseStore = create((set, get) => ({
                 }
             )
             toast.success(res.data.message);
-            get().getMyCreatedCourse(); // refresh the course list
+            get().getAllCourses(); // refresh the course list
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to add video to section";
             console.log("Error in addVideoToSection", errMsg);
@@ -115,7 +117,7 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.delete(`/course/${courseId}/delete-section/${sectionId}`)
             toast.success(res.data.message);
-            get().getMyCreatedCourse();
+            get().getAllCourses();
         } catch (error) {
             const errMsg = error?.response?.data.error || "Failed to delete section";
             console.log("Error in deleteSection: ", errMsg);
@@ -131,7 +133,7 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.delete(`/course/${courseId}/section/${sectionId}/video/${videoId}`)
             toast.success(res.data.message);
-            get().getMyCreatedCourse();
+            get().getAllCourses();
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to delete video";
             console.log("Error in deleteVideo: ", errMsg);
@@ -147,7 +149,7 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post(`/course/${courseId}/add-review`, data)
             toast.success(res.data.message)
-            get().getMyCreatedCourse();
+            get().getAllCourses();
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to review course";
             console.log("error in addreview: ", errMsg);
@@ -158,21 +160,40 @@ export const useCourseStore = create((set, get) => ({
         }
     },
 
-    deleteReview: async(courseId,reviewId)=>{
-        set({isDeletingReview:true});
+    deleteReview: async (courseId, reviewId) => {
+        set({ isDeletingReview: true });
         try {
             const res = await axiosInstance.delete(`/course/${courseId}/delete-review/${reviewId}`);
             toast.success(res.data.message);
-            get().getMyCreatedCourse();
+            get().getAllCourses();
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to delete review";
             toast.error(errMsg);
             console.error("error in deleteReview", errMsg);
-            
+
         }
-        finally{
-            set({isDeletingReview: false});
+        finally {
+            set({ isDeletingReview: false });
         }
     },
+
+    getAllCourses: async () => {
+        set({ isGettingAllCourses: true });
+        try {
+            const res = await axiosInstance.get('/course/all-courses');
+            const courses = res.data.courses;
+
+            set({ AllCourses: courses });
+
+            console.log("Fetched courses:", courses);
+
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to fetch all courses";
+            console.error("Error in getAllCourses:", errMsg);
+            toast.error(errMsg);
+        } finally {
+            set({ isGettingAllCourses: false });
+        }
+    }
 
 }))

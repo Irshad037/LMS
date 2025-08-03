@@ -64,14 +64,16 @@ const AddCoursePage = () => {
 
         <div>
           <h2 className="text-xl font-semibold text-zinc-700 ">Course Description</h2>
-          <input
+          <textarea
             type="text"
             name='description'
+            rows={4}
             value={formData.description}
             onChange={handleInputChange}
             className='w-full border-zinc-700 p-2 border rounded-[4px]'
             placeholder='Type here'
           />
+          
         </div>
         <div>
           <h2 className="text-xl font-semibold text-zinc-700 ">Category</h2>
@@ -127,7 +129,7 @@ const AddCoursePage = () => {
             />
           </div>
           <div className=' flex-1'>
-            <h2 className="text-xl font-semibold text-zinc-700 mb-1">Discount %</h2>
+            <h2 className="text-xl font-semibold text-zinc-700 mb-1">Discount Price</h2>
             <input
               type="number"
               name='discount'

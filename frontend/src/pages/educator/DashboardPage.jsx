@@ -15,8 +15,9 @@ const DashboardPage = () => {
   const { getNoOfStudentEnrolled, enrolledStudents, getMyCreatedCourse, myCreatedCourse } = useCourseStore();
 
   useEffect(() => {
+    if(authUser?.role ==="instructor"){
     getNoOfStudentEnrolled();
-    getMyCreatedCourse();
+    getMyCreatedCourse();}
   }, [])
 
   return (
