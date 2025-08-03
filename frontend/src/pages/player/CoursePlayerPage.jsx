@@ -16,7 +16,7 @@ const CoursePlayerPage = () => {
 
     const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
         addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId,
-        addreview, isAddingReview
+        addreview, isAddingReview,deleteReview,isDeletingReview
     } = useCourseStore();
 
     const { authUser } = useAuthStore();
@@ -61,7 +61,7 @@ const CoursePlayerPage = () => {
     }
 
     const handleDeleteReview =async()=>{
-
+        await deleteReview(courseId,isReviewed._id)
     }
 
     const toggleSection = (index) => {
@@ -478,10 +478,10 @@ const CoursePlayerPage = () => {
                         {/* Delete Button */}
                         <div className="mt-4 flex justify-end">
                             <button
-                                onClick={handleDeleteReview} // <- make sure this function is defined
+                                onClick={handleDeleteReview} 
                                 className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded hover:bg-red-50 hover:border-red-300 transition"
                             >
-                                Delete Review
+                                {isDeletingReview?(<><LoadingSpinner/> Deleting...</>):"Delete Review"}
                             </button>
                         </div>
                     </div>

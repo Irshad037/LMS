@@ -11,6 +11,7 @@ export const useCourseStore = create((set, get) => ({
     isCreatingSection: false,
     isAddingVideo: false,
     isAddingReview: false,
+    isDeletingReview: false,
     deletingCourseId: null,
     deleteSectionId: null,
     deleteVideoId: null,
@@ -155,6 +156,23 @@ export const useCourseStore = create((set, get) => ({
         finally {
             set({ isAddingReview: false });
         }
-    }
+    },
+
+    deleteReview: async(courseId,reviewId)=>{
+        set({isDeletingReview:true});
+        try {
+            const res = await axiosInstance.delete(`/course/${courseId}/delete-review/${reviewId}`);
+            toast.success(res.data.message);
+            get().getMyCreatedCourse();
+        } catch (error) {
+            const errMsg = error?.response?.data?.error || "Failed to delete review";
+            toast.error(errMsg);
+            console.error("error in deleteReview", errMsg);
+            
+        }
+        finally{
+            set({isDeletingReview: false});
+        }
+    },
 
 }))
