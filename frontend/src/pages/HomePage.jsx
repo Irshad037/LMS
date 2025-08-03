@@ -6,10 +6,17 @@ import microsoft_logo from '../assets/microsoft_logo.svg'
 import adobe_logo from '../assets/adobe_logo.svg'
 import accenture_logo from '../assets/accenture_logo.svg'
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
-import { dummyCourses } from '../assets/assets'
 import { Link } from 'react-router-dom';
+import { useCourseStore } from '../store/useCourseStore';
+import { useEffect } from 'react';
 
 const HomePage = () => {
+  const {AllCourses,getAllCourses} = useCourseStore();
+
+  useEffect(()=>{
+    getAllCourses();
+  },[])
+
   return (
     <div className='flex flex-col items-center justify-center p-[130px] gap-5'>
 
@@ -49,14 +56,14 @@ const HomePage = () => {
       </p>
 
       <div className='flex items-center justify-center gap-5 w-full my-14'>
-        {dummyCourses.slice(0, 4).map((course, index) => (
-          <Link to={'/purchase'} key={index} className='cursor-pointer flex shadow-xl items-center justify-center  flex-col bg-white w-[300px] h-[290px]   rounded-md'>
+        {AllCourses.slice(-4).map((course, index) => (
+          <Link to={`/purchase/${course._id}`}  key={index} className='cursor-pointer flex shadow-xl items-center justify-center  flex-col bg-white w-[300px] h-[290px]   rounded-md'>
             <div className='flex-1 w-full'>
               <img src={course.thumbnail} alt="" className='rounded-t-md h-[160px] w-full' />
             </div>
             <div className='flex-1 w-full p-2'>
               <h1 className='text-base font-bold'>{course.title}</h1>
-              <p className='text-gray-500 text-base leading-relaxed '>{course.instructor}</p>
+              <p className='text-gray-500 text-base leading-relaxed '>{course?.instructor?.name}</p>
 
               <div className='flex items-center gap-1 text-yellow-500 cursor-pointer'>
                 <p className='text-black mr-1'>{course.averageRating}</p>

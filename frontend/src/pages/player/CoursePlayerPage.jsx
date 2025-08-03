@@ -229,7 +229,7 @@ const CoursePlayerPage = () => {
                     <div className=' mb-2 w-full  flex items-center justify-between'>
                         <h1 className='text-2xl font-bold '>Course Structure</h1>
 
-                        {authUser._id === currCourse?.instructor && (
+                        {authUser._id === currCourse?.instructor._id && (
                             <button
                                 onClick={() => setCreateSection(!createSeaction)}
                                 className='btn btn-primary '
@@ -253,7 +253,7 @@ const CoursePlayerPage = () => {
 
                         <div key={index} className='w-full h-full flex justify-between '>
 
-                            {authUser._id === currCourse?.instructor && (
+                            {authUser._id === currCourse?.instructor._id && (
                                 <>
                                     {deleteSectionId === section._id ? (<LoadingSpinner size={16} />) :
 
@@ -274,7 +274,7 @@ const CoursePlayerPage = () => {
 
                             )}
 
-                            <div className={`basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white ${authUser._id != currCourse?.instructor ? "rounded-md" : "rounded-r-md"} `}>
+                            <div className={`basis-[90%] border-1 border-zinc-500 shadow-xl mt-4 bg-white ${authUser._id != currCourse?.instructor._id ? "rounded-md" : "rounded-r-md"} `}>
 
                                 <div className='flex items-center justify-between w-full h-[60px] border-b border-zinc-500 shadow-lg  p-[10px] gap-4'>
                                     <div className='flex items-center flex-1 gap-2'>
@@ -285,7 +285,7 @@ const CoursePlayerPage = () => {
                                         <h1 className='text-xl font-bold text-zinc-700'>{section.sectionTitle}</h1>
                                     </div>
 
-                                    {authUser._id === currCourse?.instructor && (
+                                    {authUser._id === currCourse?.instructor._id && (
                                         <button className='btn bg-zinc-700 text-white hover:bg-black '
                                             onClick={() => {
                                                 setAddVideoModal(!addVideoModal)
@@ -334,7 +334,7 @@ const CoursePlayerPage = () => {
                                                 </div>
                                                 <div className='text-base font-semibold text-zinc-600'>{video.duration} Minutes</div>
 
-                                                {authUser._id === currCourse?.instructor && (<>
+                                                {authUser._id === currCourse?.instructor._id && (<>
                                                     {deleteVideoId === video._id ? (
                                                         <LoadingSpinner size={16} />
                                                     ) : (

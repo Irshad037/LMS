@@ -332,7 +332,10 @@ export const showReviewToCourse = async (req, res) => {
 export const showAllCourse = async (req, res) => {
     try {
 
-        const courses = await Course.find()
+        const courses = await Course.find().populate({
+            path: "instructor",
+            select: "name", // Include only instructor name
+        });
 
         res.status(200).json({ total: courses.length, courses });
     } catch (error) {

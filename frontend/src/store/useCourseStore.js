@@ -8,7 +8,7 @@ export const useCourseStore = create((set, get) => ({
     AllCourses: [],
     myCreatedCourse: [],
     enrolledStudents: [],
-    isGetAllCourses: false,
+    isGettingAllCourses: false,
     isCreatingCourse: false,
     isCreatingSection: false,
     isAddingVideo: false,
