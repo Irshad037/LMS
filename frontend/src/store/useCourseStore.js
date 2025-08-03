@@ -13,6 +13,7 @@ export const useCourseStore = create((set, get) => ({
     isCreatingSection: false,
     isAddingVideo: false,
     isAddingReview: false,
+    isSearchingCourse:false,
     isDeletingReview: false,
     deletingCourseId: null,
     deleteSectionId: null,
@@ -193,6 +194,22 @@ export const useCourseStore = create((set, get) => ({
             toast.error(errMsg);
         } finally {
             set({ isGettingAllCourses: false });
+        }
+    },
+
+    searchCourse: async (query)=>{
+        set({isSearchingCourse:true});
+        try {
+            const res = await axiosInstance.get(`/course/search?query=${encodeURIComponent(query)}`);
+            set({AllCourses: res.data});
+            console.log("Search results:", res.data);
+        } catch (error) {
+            const errmsg = error?.response?.data?.error || "Failed to search courses";
+            console.error("Error in searchCourse:", errmsg);        
+            toast.error(errmsg);
+        }
+        finally {
+            set({isSearchingCourse:false});
         }
     }
 

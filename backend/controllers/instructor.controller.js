@@ -349,19 +349,20 @@ export const searchCourse = async (req, res) => {
         const { query } = req.query;
         if (!query) return res.status(400).json({ error: "Search query is required" })
 
-        const course = await Course.find({
+        const courses = await Course.find({
             $or: [
                 { title: { $regex: query, $options: "i" } },
                 { category: { $regex: query, $options: "i" } }
             ]
-        })
-            .populate("instructor", "name email")
-            .select("title description category averageRating instructor createdAt");
+        }).populate({
+            path: "instructor",
+            select: "name", 
+        });
 
-        res.status(200).json(course);
+        res.status(200).json(courses);
     } catch (error) {
         console.log("Error in searchCourse controller", error.message);
-        res.status(500).json({ error: "Internal sever error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 }
 

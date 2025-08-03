@@ -69,7 +69,7 @@ const App = () => {
         <Route path='/player/:courseId' element={authUser ? <CoursePlayerPage /> : <Navigate to={'/login'} />} />
         <Route path='/my-enrollments' element={authUser ? <MyEnrollmentPage /> : <Navigate to={'/login'} />} />
         <Route path='/purchase/:courseId' element={authUser ? <PurchasePage /> : <Navigate to={'/login'} />} />
-        <Route path='/all-courses' element={<CoursePage />} />
+        <Route path='/all-courses/:input?' element={<CoursePage />} />
 
 
         <Route path="/educator" element={(authUser?.role === 'instructor' || instructorRequest) ? <EducatorLayout /> : <Navigate to="/" />}>

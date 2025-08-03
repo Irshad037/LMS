@@ -22,6 +22,6 @@ router.delete("/:courseId/delete-review/:reviewId", protectRoute, deleteMyReview
 router.get("/:courseId/show-review/", protectRoute, showReviewToCourse);
 router.get("/all-courses", protectRoute, showAllCourse);
 router.get("/enrolledStudent", protectRoute,NoOfStudentEnrolled)
-router.get("/search", protectRoute, searchCourse)
+router.get("/search", searchCourse)
 
 export default router;
