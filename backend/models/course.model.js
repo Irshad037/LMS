@@ -23,9 +23,9 @@ const courseSchema = new mongoose.Schema(
       trim: true,
     },
     thumbnail: { type: String, required: true },
-    coursePrice:{type:Number, required: true},
-    discount:{type:Number, required: true},
-    
+    coursePrice: { type: Number, required: true },
+    discount: { type: Number, required: true },
+
     content: [
       {
         sectionTitle: { type: String, required: true },
@@ -39,10 +39,11 @@ const courseSchema = new mongoose.Schema(
         ]
       }
     ],
-     enrolledStudents: [
+    enrolledStudents: [
       {
         student: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         enrolledAt: { type: Date, default: Date.now },
+        expiresAt: { type: Date },
       }
     ],
     reviews: [
@@ -71,6 +72,14 @@ const courseSchema = new mongoose.Schema(
     averageRating: {
       type: Number,
       default: 0,
+    },
+    additionalBenefits: {
+      accessDuration: { type: String, default: "2 year access" },
+      accessDurationInDays: { type: Number, default: 730, required: true },
+      otherBenefits: {
+        type: [String],
+        default: [],
+      }
     },
 
   },

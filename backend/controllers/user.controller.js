@@ -238,6 +238,10 @@ export const enrollInCourse = async (req, res) => {
         if (user.enrolledCourses.includes(courseId)) {
             return res.status(400).json({ error: "Already enrolled in this course" });
         }
+        const accessDurationInDays = course.additionalBenefits.accessDurationInDays || 730; // Default to 2 years if not set
+        const enrolledAt = new Date();
+        const expiresAt = new Date(enrolledAt.getTime() + accessDurationInDays * 24 * 60 * 60 * 1000); // Add access duration in milliseconds
+
 
         // Add course to user's enrolledCourses
         user.enrolledCourses.push(courseId);
@@ -246,13 +250,14 @@ export const enrollInCourse = async (req, res) => {
         // ✅ Add student to course's enrolledStudents with full object
         course.enrolledStudents.push({
             student: user._id,
-            enrolledAt: new Date(),
+            enrolledAt,
+            expiresAt,
         });
         await course.save();
 
         res.status(200).json({ message: "✅ Enrolled in course successfully", courseId });
     } catch (error) {
-        console.log("Error in enrollInCourse controller", error.message);
+        console.error("Error in enrollInCourse controller", error.message);
         res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -261,29 +266,16 @@ export const enrollInCourse = async (req, res) => {
 export const getEnrolledCourses = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
-            .populate({
-                path: "enrolledCourses",
-                select: "title thumbnail category averageRating",
-                options: { sort: { createdAt: -1 } },
-                populate: {
-                    path: "instructor",
-                    select: "name email",
-                },
-            })
-            .select("enrolledCourses");
 
-        if (!user) return res.status(404).json({ error: "User not found" });
+        if (!user) return res.status(404).json({ error: "user not found" });
 
-        if (user.enrolledCourses.length === 0) {
-            return res.status(200).json({ message: "You have not enrolled in any courses yet." });
-        }
+        const courses = await Course.find({ _id: { $in: user.enrolledCourses } })
+       
 
-        res.status(200).json({
-            enrolledCourses: user.enrolledCourses
-        });
+        res.status(200).json(courses)
 
     } catch (error) {
-        console.log("Error in getEnrolledCourses controller", error.message)
+        console.error("Error in getEnrolledCourses controller", error.message)
         res.status(500).json({ error: "Internal server error" })
     }
 }

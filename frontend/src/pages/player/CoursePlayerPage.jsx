@@ -16,7 +16,7 @@ const CoursePlayerPage = () => {
 
     const { createSection: createSectionFnc, isCreatingSection, getMyCreatedCourse, myCreatedCourse,
         addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId,
-        addreview, isAddingReview,deleteReview,isDeletingReview,getAllCourses,AllCourses
+        addreview, isAddingReview, deleteReview, isDeletingReview, getAllCourses, AllCourses
     } = useCourseStore();
 
     const { authUser } = useAuthStore();
@@ -59,10 +59,10 @@ const CoursePlayerPage = () => {
         setComment("");
     }
 
-    const handleDeleteReview =async()=>{
-        const confirmDelete  = window.confirm("Are you sure you want to delete your review?");
+    const handleDeleteReview = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete your review?");
         if (!confirmDelete) return;
-        await deleteReview(courseId,isReviewed._id)
+        await deleteReview(courseId, isReviewed._id)
     }
 
     const toggleSection = (index) => {
@@ -180,33 +180,40 @@ const CoursePlayerPage = () => {
                             {/* Preview if video is selected */}
                             {videoURL && (
                                 <div className="relative bg-gray-800 w-full rounded overflow-hidden ">
-                                    <IoCloseSharp
-                                        className="absolute top-2 right-2 text-white bg-gray-700 rounded-full w-6 h-6 p-1 cursor-pointer z-10 pointer-events-auto"
+                                    <button
+                                        className="absolute top-2 right-2 bg-gray-700 rounded-full w-6 h-6 p-1 cursor-pointer z-10 pointer-events-auto text-white disabled:opacity-50"
                                         onClick={() => {
                                             setVideoURL(null);
                                             videoRef.current.value = null;
                                         }}
-                                    />
+                                        disabled={isAddingVideo}
+                                    >
+                                        <IoCloseSharp className="w-full h-full" />
+                                    </button> disabled={isAddingVideo}
+
                                     <video
+                                        ref={videoRef}
                                         src={videoURL}
                                         controls
                                         className="w-full aspect-video object-contain rounded"
+                                        onLoadedMetadata={(e) => {
+                                            const raw = e.target.duration;
+                                            if (!raw) return;
+
+                                            const min = Math.floor(raw / 60);
+                                            const sec = Math.floor(raw % 60);
+                                            const duration = `${min}.${sec}`;
+
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                duration,
+                                            }));
+                                        }}
                                     />
 
                                 </div>
                             )}
-                        </div>
 
-                        <div className=' flex items-center gap-4'>
-                            <h2 className="text-xl text-zinc-600 font-semibold">Duration</h2>
-                            <input
-                                type="number"
-                                name='duration'
-                                value={formData.duration}
-                                onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                                className="basis-[70%] w-full border border-zinc-400 p-2 rounded-sm focus:outline-none focus:border-zinc-700"
-                                placeholder="Type here"
-                            />
                         </div>
 
                         {/* Submit Button */}
@@ -479,10 +486,10 @@ const CoursePlayerPage = () => {
                         {/* Delete Button */}
                         <div className="mt-4 flex justify-end">
                             <button
-                                onClick={handleDeleteReview} 
+                                onClick={handleDeleteReview}
                                 className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded hover:bg-red-50 hover:border-red-300 transition"
                             >
-                                {isDeletingReview?(<><LoadingSpinner/> Deleting...</>):"Delete Review"}
+                                {isDeletingReview ? (<><LoadingSpinner /> Deleting...</>) : "Delete Review"}
                             </button>
                         </div>
                     </div>

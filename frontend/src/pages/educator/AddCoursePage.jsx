@@ -13,8 +13,11 @@ const AddCoursePage = () => {
     category: "",
     coursePrice: "",
     discount: "",
-    thumbnail: "",
-  })
+    accessDuration: "2 year access",
+    accessDurationInDays: 730,
+    otherBenefits: [],
+  });
+  const [benefitsInput, setBenefitsInput] = useState(""); // temp input string
   const [discount, setDescount] = useState(0);
   const [img, setImg] = useState(null);
   const imgRef = useRef(null);
@@ -39,9 +42,18 @@ const AddCoursePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+
+
     const payload = {
-      ...formData, thumbnail: img
+      ...formData,
+      thumbnail: img,
+      otherBenefits: benefitsInput
+        .split(',')                 // splits on commas → ["Certificate", " Lifetime Access", " Downloadable Resources"]
+        .map(b => b.trim())         // removes leading/trailing spaces → ["Certificate", "Lifetime Access", "Downloadable Resources"]
+        .filter(b => b.length > 0)
     }
+
     await createCourse(payload)
     console.log(payload);
     setFormData({ title: "", description: "", category: "", coursePrice: "", discount: "", thumbnail: "" })
@@ -155,18 +167,51 @@ const AddCoursePage = () => {
               placeholder='0'
             />
           </div>
+
           <div className=' flex-1'>
             <h2 className="text-xl font-semibold text-zinc-700 mb-1">Discount price</h2>
             <div className=' p-2 border border-zinc-700 rounded-[4px] h-[42px]'>
               <p className=''>{formData.discount}</p>
             </div>
-
           </div>
-
 
         </div>
 
+        <div>
+          <h2 className="text-xl font-semibold text-zinc-700 mb-1">Access Duration</h2>
+          <input
+            type="text"
+            name="accessDuration"
+            value={formData.accessDuration}
+            onChange={handleInputChange}
+            className="w-full border-zinc-700 p-2 border rounded-[4px]"
+            placeholder="e.g. 2 year access"
+          />
+        </div>
 
+        <div>
+          <h2 className="text-xl font-semibold text-zinc-700 mb-1">Access Duration (in Days)</h2>
+          <input
+            type="number"
+            name="accessDurationInDays"
+            value={formData.accessDurationInDays}
+            onChange={handleInputChange}
+            className="w-full border-zinc-700 p-2 border rounded-[4px]"
+            placeholder="e.g. 730"
+          />
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold text-zinc-700 mb-1">Other Benefits (comma separated)</h2>
+          <input
+            type="text"
+            name="otherBenefits"
+            value={benefitsInput}
+            onChange={(e) => setBenefitsInput(e.target.value)}
+            className="w-full border-zinc-700 p-2 border rounded-[4px]"
+            placeholder="e.g. Certificate, Lifetime Updates"
+          />
+        </div>
 
         <button className='btn bg-zinc-800 hover:bg-black text-white '
           disabled={isCreatingCourse}

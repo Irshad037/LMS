@@ -1,16 +1,17 @@
 import { cloudinary } from "../config/cloudinary.js";
 import Course from "../models/course.model.js";
-import User from "../models/user.model.js";
 
 export const createCourse = async (req, res) => {
     try {
-        const { title, description, category, coursePrice, discount } = req.body;
+        const { title, description, category, coursePrice, discount,
+            accessDuration = "2 year access",
+            accessDurationInDays = 730,
+            otherBenefits = [],
+        } = req.body;
+
         let { thumbnail } = req.body;
 
         // Validate required fields
-        if (!title || !description || !category || !thumbnail || !coursePrice || !discount) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
         if (!title || !description || !category || !thumbnail || !coursePrice || !discount) {
             return res.status(400).json({ error: "All fields are required" });
         }
@@ -27,6 +28,11 @@ export const createCourse = async (req, res) => {
             instructor: req.user._id,
             coursePrice,
             discount,
+            additionalBenefits: {
+                accessDuration,
+                accessDurationInDays,
+                otherBenefits,
+            },
         });
 
         await course.save();
@@ -54,7 +60,7 @@ export const deleteCourse = async (req, res) => {
 
         await Course.findByIdAndDelete(courseId);
 
-        res.status(200).json({ message: "✅ Course deleted successfully" });
+        res.status(200).json({ message: "Course deleted successfully" });
     } catch (error) {
         console.error("❌ Error in deleteCourse controller:", error.message);
         res.status(500).json({ error: "Internal server error" });
@@ -359,7 +365,7 @@ export const searchCourse = async (req, res) => {
             ]
         }).populate({
             path: "instructor",
-            select: "name", 
+            select: "name",
         });
 
         res.status(200).json(courses);
