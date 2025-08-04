@@ -37,7 +37,6 @@ const CoursePlayerPage = () => {
     const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "", Sidx: 0, Vidx: 0 });
 
 
-    //TODO: replace myCreatedCourse with AllCourses
     const currCourse = AllCourses?.find((course) => course._id === courseId);
     const contents = currCourse?.content || [];
     const isReviewed = currCourse?.reviews?.find((review) => review.user === authUser._id);

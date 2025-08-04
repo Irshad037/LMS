@@ -15,6 +15,7 @@ const AddCoursePage = () => {
     discount: "",
     thumbnail: "",
   })
+  const [discount, setDescount] = useState(0);
   const [img, setImg] = useState(null);
   const imgRef = useRef(null);
 
@@ -45,6 +46,21 @@ const AddCoursePage = () => {
     console.log(payload);
     setFormData({ title: "", description: "", category: "", coursePrice: "", discount: "", thumbnail: "" })
     setImg(null)
+    setDescount(0);
+  }
+
+  const handleDiscount = (e) => {
+    const newDiscount = e.target.value;
+    setDescount(newDiscount);
+
+    const price = parseFloat(formData.coursePrice) || 0;
+    const discountAmount = price - ((price * newDiscount) / 100);
+
+    setFormData((prev) => ({
+      ...prev,
+      discount: discountAmount.toFixed(2)
+    }))
+
   }
 
   return (
@@ -73,7 +89,7 @@ const AddCoursePage = () => {
             className='w-full border-zinc-700 p-2 border rounded-[4px]'
             placeholder='Type here'
           />
-          
+
         </div>
         <div>
           <h2 className="text-xl font-semibold text-zinc-700 ">Category</h2>
@@ -116,7 +132,7 @@ const AddCoursePage = () => {
 
         </div>
 
-        <div className=' flex items-center justify-between gap-10'>
+        <div className=' flex items-center justify-between gap-3'>
           <div className='flex-1'>
             <h2 className="text-xl font-semibold text-zinc-700 mb-1">Course Price</h2>
             <input
@@ -129,16 +145,25 @@ const AddCoursePage = () => {
             />
           </div>
           <div className=' flex-1'>
-            <h2 className="text-xl font-semibold text-zinc-700 mb-1">Discount Price</h2>
+            <h2 className="text-xl font-semibold text-zinc-700 mb-1">Discount%</h2>
             <input
               type="number"
               name='discount'
-              value={formData.discount}
-              onChange={handleInputChange}
+              value={discount}
+              onChange={handleDiscount}
               className='w-full border-zinc-700 p-2 border rounded-[4px]'
               placeholder='0'
             />
           </div>
+          <div className=' flex-1'>
+            <h2 className="text-xl font-semibold text-zinc-700 mb-1">Discount price</h2>
+            <div className=' p-2 border border-zinc-700 rounded-[4px] h-[42px]'>
+              <p className=''>{formData.discount}</p>
+            </div>
+
+          </div>
+
+
         </div>
 
 

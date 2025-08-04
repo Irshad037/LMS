@@ -11,6 +11,9 @@ export const createCourse = async (req, res) => {
         if (!title || !description || !category || !thumbnail || !coursePrice || !discount) {
             return res.status(400).json({ error: "All fields are required" });
         }
+        if (!title || !description || !category || !thumbnail || !coursePrice || !discount) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
 
         const uploadReasponse = await cloudinary.uploader.upload(thumbnail);
         thumbnail = uploadReasponse.secure_url;

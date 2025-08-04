@@ -5,10 +5,16 @@ import { TbPlayerPlayFilled } from 'react-icons/tb';
 import course from '../../assets/course_1.png'
 import { IoMdStopwatch } from 'react-icons/io';
 import { GiOpenBook } from "react-icons/gi";
+import { useParams } from 'react-router-dom';
+import { useCourseStore } from '../../store/useCourseStore';
+import { useEffect } from 'react';
 
 const PurchasePage = () => {
+    const {getAllCourses,AllCourses}= useCourseStore();
     const [openSection, setOpenSection] = useState({})
+    const {courseId} = useParams();
 
+    const currCourse = AllCourses?.find((course)=> course._id === courseId)
     const averageRating = 3.5;
 
     const toggleSection = (index) => {
@@ -16,29 +22,33 @@ const PurchasePage = () => {
             ...prev, [index]: !prev[index]
         }));
     }
+
+    useEffect(()=>{
+        getAllCourses();
+    },[])
     return (
         <div className='px-[130px] py-[100px] flex items-center '>
             <div className='flex-1 flex flex-col gap-3'>
                 <h1 className='text-4xl font-bold leading-snug '>Learn from the best</h1>
                 <p className="text-gray-500 text-base leading-relaxed ">
-                    Discover our top-rated courses across various categories. From coding and design to business and wellness, our courses are crafted to deliver results.
+                    {currCourse?.description}
                 </p>
 
                 <div className='flex items-center gap-1 text-yellow-500 cursor-pointer'>
-                    <p className='text-gray-500 text-base leading-relaxed'>{averageRating}</p>
+                    <p className='text-gray-500 text-base leading-relaxed'>{currCourse?.averageRating}</p>
                     {Array.from({ length: 5 }, (_, i) => {
                         const value = i + 1;
-                        if (averageRating > value) return <FaStar size={14} />
-                        else if (averageRating >= value - 0.5) return <FaStarHalfAlt size={15} />
+                        if (currCourse?.averageRating > value) return <FaStar size={14} />
+                        else if (currCourse?.averageRating >= value - 0.5) return <FaStarHalfAlt size={15} />
                         else return <FaRegStar size={16} />
                     })}
                     <p className="text-gray-500 text-base leading-relaxed ">
-                        <span className='text-blue-500 mx-1'> (1rating) </span>2 students
+                        <span className='text-blue-500 mx-1'> ({currCourse?.reviews.length}) </span>{currCourse.enrolledStudents.length} students
                     </p>
                 </div>
 
                 <p className="text-gray-500 text-base leading-relaxed ">
-                    Course by<span className='text-blue-500 mx-1 underline cursor-pointer'>Tebular </span>
+                    Course by<span className='text-blue-500 mx-1 underline cursor-pointer'>{currCourse.instructor.name} </span>
                 </p>
 
 
@@ -46,7 +56,7 @@ const PurchasePage = () => {
 
                 <div className='flex flex-col items-center justify-center gap-5 w-full'>
 
-                    {dummyCoursesPlayer[0].content.map((section, index) => (
+                    {currCourse.content.slice(0, 2).map((section, index) => (
 
                         <div key={section.sectionTitle} className='w-full flex justify-between '>
 
@@ -100,8 +110,8 @@ const PurchasePage = () => {
 
             </div>
             <div className='flex-1 flex justify-center gap-1'>
-                <div className='bg-white w-[430px] flex flex-col'>
-                    <img src={course} alt="thumnail" />
+                <div className='bg-white w-[430px] flex flex-col shadow-2xl shadow-zinc-500'>
+                    <img src={currCourse.thumbnail} alt="thumnail" />
 
                     <div className='p-4 mt-4' >
                         <div className='flex items-center gap-1'>
@@ -109,8 +119,8 @@ const PurchasePage = () => {
                             <p className='text-red-400 text-base font-md my'>5 day left at this price</p>
                         </div>
                         <div className='flex items-center gap-2'>
-                            <h1 className='text-4xl font-semibold leading-snug'> $55.99</h1>
-                            <p className='text-xl text-zinc-500 font-semibold line-through'>$69.99</p>
+                            <h1 className='text-4xl font-semibold leading-snug'> ${currCourse.discount}</h1>
+                            <p className='text-xl text-zinc-500 font-semibold line-through'>${currCourse.coursePrice}</p>
                             <p className='text-xl text-zinc-500 font-semibold'>20% off</p>
                         </div>
 
