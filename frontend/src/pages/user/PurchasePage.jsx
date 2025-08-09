@@ -8,9 +8,13 @@ import { GiOpenBook } from "react-icons/gi";
 import { useParams } from 'react-router-dom';
 import { useCourseStore } from '../../store/useCourseStore';
 import { useEffect } from 'react';
+import { useUserStore } from '../../store/useUserStore';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const PurchasePage = () => {
     const { getAllCourses, AllCourses } = useCourseStore();
+    const { enrollInCourse, isEnrolling } = useUserStore();
+
     const [openSection, setOpenSection] = useState({})
     const { courseId } = useParams();
 
@@ -139,18 +143,21 @@ const PurchasePage = () => {
                 <div className="flex flex-col gap-2 mt-16">
                     <h1 className="text-2xl font-bold mt-2">What is in this course?</h1>
                     <ul className="list-disc list-inside text-gray-700">
-                        <li>2 year access</li>
-                        <li>Free resume guidance</li>
-                        <li>Step-by-step hands-on project guidance</li>
-                        <li>Mentorship sessions</li>
-                        <li>Certificate of Completion</li>
+                        <li>{currCourse?.additionalBenefits.accessDuration}</li>
+
+                        {currCourse?.additionalBenefits.otherBenefits.map((benifit, idx) => (
+                            <li key={idx}>{benifit}</li>
+                        ))}
                     </ul>
                 </div>
 
             </div>
             <div className='flex-1 flex justify-center gap-1'>
                 <div className='bg-white w-[430px] flex flex-col shadow-2xl shadow-zinc-500'>
-                    <img src={currCourse?.thumbnail} alt="thumnail" />
+                    <div className='h-[250px]'>
+
+                        <img src={currCourse?.thumbnail} loading="lazy" alt="thumnail" className='h-full w-full object-cover' />
+                    </div>
 
                     <div className='p-4 mt-4' >
                         <div className='flex items-center gap-1'>
@@ -177,7 +184,19 @@ const PurchasePage = () => {
                             </div>
                         </div>
 
-                        <button className='btn btn-primary w-full  my-6'>Enroll Now</button>
+                        <button
+                            className="btn btn-primary w-full my-6 flex items-center justify-center gap-2"
+                            onClick={() => enrollInCourse(courseId)}
+                            disabled={isEnrolling}
+                        >
+                            {isEnrolling ? (
+                                <>
+                                    <LoadingSpinner size="sm" /> Enrolling...
+                                </>
+                            ) : (
+                                "Enroll Now"
+                            )}
+                        </button>
                     </div>
 
                 </div>

@@ -255,7 +255,7 @@ export const enrollInCourse = async (req, res) => {
         });
         await course.save();
 
-        res.status(200).json({ message: "✅ Enrolled in course successfully", courseId });
+        res.status(200).json({ message: "Enrolled in course successfully", courseId });
     } catch (error) {
         console.error("Error in enrollInCourse controller", error.message);
         res.status(500).json({ error: "Internal server error" });

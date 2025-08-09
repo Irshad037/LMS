@@ -211,6 +211,7 @@ export const useCourseStore = create((set, get) => ({
         finally {
             set({isSearchingCourse:false});
         }
-    }
+    },
+
 
 }))
