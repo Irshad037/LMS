@@ -4,10 +4,12 @@ import toast from 'react-hot-toast';
 
 export const useUserStore = create((set, get) => ({
   instructorRequest: null,
+  enrolledCourse: [],
   isRequesting: false,
   isGettingStatus: false,
   isDeletingRequest: false,
   isEnrolling: false,
+  isGettingEnrolCou: false,
 
   // Send instructor request
   requestForInstructor: async (data) => {
@@ -68,7 +70,27 @@ export const useUserStore = create((set, get) => ({
       console.error("Error in enrollInCourse: ", errmsg);
       toast.error(errmsg);
     } finally {
-    set({ isEnrolling: false });
+      set({ isEnrolling: false });
+    }
+  },
+
+  getEnrolledCourse: async () => {
+    set({ isGettingEnrolCou: true })
+    try {
+      const res = await axiosInstance.get('/user/enrolled-course');
+      const courses = res?.data?.courses || [];
+
+      set({ enrolledCourse: courses });
+      console.log("Fetched enrolled courses:", courses);
+
+    } catch (error) {
+      const errmsg = error?.response?.data?.error;
+      console.error("Error in getEnrolledCourse: ", errmsg);
+      toast.error(errmsg);
+    } finally {
+      set({ isGettingEnrolCou: false })
+    }
   }
-  }
+
+
 }));

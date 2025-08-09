@@ -3,14 +3,22 @@ import course1 from '../../assets/course_1.png';
 import { dummyCourses } from '../../assets/assets'
 import { Link} from 'react-router-dom';
 import { Line } from 'rc-progress';
+import { useUserStore } from '../../store/useUserStore';
+import { useEffect } from 'react';
 
 
 const MyEnrollementPage = () => {
+  const {  enrolledCourse,isEnrolling,getEnrolledCourse} = useUserStore();
   
   const [progressArray, setProgressArray] = useState([
     { lectureCompleted: 1, totalLecture: 2 },
     { lectureCompleted: 1, totalLecture: 1 }
   ])
+
+  useEffect(()=>{
+    getEnrolledCourse();
+  },[getEnrolledCourse])
+  
   return (
     <div className=' px-[130px] py-16'>
       <h1 className='text-3xl font-bold'>My course</h1>
@@ -26,13 +34,13 @@ const MyEnrollementPage = () => {
 
 
         {
-          dummyCourses.map((course, index) => (
-            <div className='flex items-center justify-between p-4 border-b border-zinc-500'>
+          enrolledCourse?.map((enroll, index) => (
+            <div key={enroll.course._id} className='flex items-center justify-between p-4 border-b border-zinc-500'>
 
-              <Link to={`/player/${course._id}`} className='flex basis-[46%] cursor-pointer gap-2 w-full'>
-                <img src={course.thumbnail} alt="" className='w-24 ' />
+              <Link to={`/player/${enroll.course._id}`} className='flex basis-[46%] cursor-pointer gap-2 w-full'>
+                <img src={enroll.course?.thumbnail} alt="" className='w-24 ' />
                 <div className='flex-1 flex flex-col '>
-                  <h1>{course.title}</h1>
+                  <h1>{enroll.course.title}</h1>
                   <Line strokeWidth={2} percent={
                     progressArray[index]
                       ? (progressArray[index].lectureCompleted * 100) / (progressArray[index].totalLecture)
@@ -48,9 +56,13 @@ const MyEnrollementPage = () => {
                   `${progressArray[index].lectureCompleted}/${progressArray[index].totalLecture}`
                 }
               </div>
-              <div>22/5/2025</div>
+              <div>{new Date(enroll.enrolledAt).toLocaleDateString('en-IN',{
+                day:'2-digit',
+                month:'short',
+                year:'numeric'
+              })}</div>
 
-              <Link to={`/player/${course._id}`} 
+              <Link to={`/player/${enroll.course._id}`} 
               className={`btn basis-[10%]  
               ${progressArray[index] &&progressArray[index].lectureCompleted / progressArray[index].totalLecture == 1
                 ?" bg-green-600 text-white "

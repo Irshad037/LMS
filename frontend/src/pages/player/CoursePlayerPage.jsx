@@ -209,6 +209,7 @@ const CoursePlayerPage = () => {
                                                 duration,
                                             }));
                                         }}
+                                        
                                     />
 
                                 </div>

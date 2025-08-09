@@ -22,8 +22,19 @@ const userSchema = new mongoose.Schema(
     },
     enrolledCourses: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
+        course: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Course",
+        },
+        enrolledAt: {
+          type: Date,
+          default: Date.now,
+        },
+        progress: {
+          completedVideos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Video' }],
+          completedLectures: [{ type: mongoose.Schema.Types.ObjectId }] // section IDs
+        },
+
       }
     ],
     role: {
@@ -31,7 +42,7 @@ const userSchema = new mongoose.Schema(
       enum: ['student', 'instructor', 'admin'],
       default: 'student'
     },
-    isApplyForInstructor:{type : Boolean, default: false},
+    isApplyForInstructor: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

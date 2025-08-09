@@ -3,6 +3,7 @@ import InstructorRequest from "../models/instructorRequest.model.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from 'cloudinary';
+import mongoose from "mongoose";
 
 
 export const requestInstructor = async (req, res) => {
@@ -235,7 +236,11 @@ export const enrollInCourse = async (req, res) => {
             return res.status(404).json({ error: "User or course not found" });
         }
 
-        if (user.enrolledCourses.includes(courseId)) {
+        const alreadyEnrolled = user.enrolledCourses.some(
+            (enrolled) => enrolled.course.toString() === courseId
+        );
+
+        if (alreadyEnrolled) {
             return res.status(400).json({ error: "Already enrolled in this course" });
         }
         const accessDurationInDays = course.additionalBenefits.accessDurationInDays || 730; // Default to 2 years if not set
@@ -244,7 +249,7 @@ export const enrollInCourse = async (req, res) => {
 
 
         // Add course to user's enrolledCourses
-        user.enrolledCourses.push(courseId);
+        user.enrolledCourses.push({ course: courseId, enrolledAt });
         await user.save();
 
         // ✅ Add student to course's enrolledStudents with full object
@@ -266,16 +271,76 @@ export const enrollInCourse = async (req, res) => {
 export const getEnrolledCourses = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
+            .populate('enrolledCourses.course');
 
-        if (!user) return res.status(404).json({ error: "user not found" });
+        if (!user) return res.status(404).json({ error: "User not found" });
 
-        const courses = await Course.find({ _id: { $in: user.enrolledCourses } })
-       
-
-        res.status(200).json(courses)
+        res.status(200).json({ courses: user.enrolledCourses });
 
     } catch (error) {
         console.error("Error in getEnrolledCourses controller", error.message)
         res.status(500).json({ error: "Internal server error" })
     }
 }
+
+export const markeLectureCompleted = async (req, res) => {
+    const { courseId, sectionId, videoId } = req.params;
+
+    try {
+        // 1️⃣ Find user
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // 2️⃣ Check enrollment
+        const enrolled = user.enrolledCourses.find(e => e.course.toString() === courseId);
+        if (!enrolled) {
+            return res.status(403).json({ error: 'Not enrolled in this course' });
+        }
+
+        // 3️⃣ Ensure progress structure exists
+        if (!enrolled.progress) {
+            enrolled.progress = { completedLectures: [], completedVideos: [] };
+        }
+        if (!enrolled.progress.completedVideos) {
+            enrolled.progress.completedVideos = [];
+        }
+        if (!enrolled.progress.completedLectures) {
+            enrolled.progress.completedLectures = [];
+        }
+
+        // 4️⃣ Add video to completedVideos if not already
+        if (!enrolled.progress.completedVideos.includes(videoId)) {
+            enrolled.progress.completedVideos.push(videoId);
+        }
+
+        // 5️⃣ Get the course to check section & videos
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ error: "Course not found" });
+
+        const section = course.content.id(sectionId);
+        if (!section) return res.status(404).json({ error: "Section not found" });
+
+        // 6️⃣ Check if all videos in section are completed
+        const allVideosCompleted = section.videos.every(video =>
+            enrolled.progress.completedVideos.includes(video._id.toString())
+        );
+
+        // 7️⃣ If all completed, mark lecture as completed
+        if (allVideosCompleted && !enrolled.progress.completedLectures.includes(sectionId)) {
+            enrolled.progress.completedLectures.push(sectionId);
+        }
+
+        // 8️⃣ Save progress
+        await user.save();
+
+        res.status(200).json({
+            message: "Progress updated",
+            completedLectures: enrolled.progress.completedLectures,
+            completedVideos: enrolled.progress.completedVideos
+        });
+
+    } catch (error) {
+        console.error("Error in markLectureCompleted", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
