@@ -89,6 +89,8 @@ export const useCourseStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get('/course/enrolledStudent')
             set({ enrolledStudents: res.data.students })
+            console.log(res.data.students);
+            
         } catch (error) {
             const errMsg = error?.response?.data?.error || "Failed to fetch enrolled students";
             console.log("Error in getNoOfStudentEnrolled:", errMsg);

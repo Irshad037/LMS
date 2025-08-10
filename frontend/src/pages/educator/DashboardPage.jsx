@@ -20,6 +20,8 @@ const DashboardPage = () => {
     getMyCreatedCourse();}
   }, [])
 
+  const totalProfit = enrolledStudents.reduce((sum, student) => sum + Number(student.courseprice || 0), 0);
+
   return (
     <div className=' flex flex-col py-[100px] px-[130px]'>
 
@@ -46,7 +48,7 @@ const DashboardPage = () => {
             <div className='flex items-center p-5 w-60 bg-white border border-blue-200 shadow-xl rounded-md gap-2'>
               <img src={earning_icon} alt="person" />
               <div >
-                <p className='text-xl font-bold text-center'>2</p>
+                <p className='text-xl font-bold text-center'>{totalProfit}$</p>
                 <p>Total Earnings</p>
               </div>
             </div>

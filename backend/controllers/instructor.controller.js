@@ -383,7 +383,7 @@ export const NoOfStudentEnrolled = async (req, res) => {
                 path: "enrolledStudents.student",
                 select: "name email profileImg",
             })
-            .select("title enrolledStudents createdAt");
+            .select("title enrolledStudents createdAt  discount");
 
 
         const students = [];
@@ -398,6 +398,7 @@ export const NoOfStudentEnrolled = async (req, res) => {
                         avatar: student.profileImg,
                         courseTitle: course.title,
                         enrolledDate: enrolledAt,
+                        courseprice:course.discount
                     });
                 }
             })
