@@ -105,12 +105,14 @@ const CoursePlayerPage = () => {
 
     };
 
-    const hcv = ()=>{
-        if (!completedVideos.includes) {
-            
+    const handleVideoEnd = () => {
+        if (!completedVideos.includes(currVideoInfo.videoId)) {
+            markVideoCompleted(courseId, currVideoInfo.lectureId, currVideoInfo.videoId);
+            setCompletedVideos(prev => [...prev, currVideoInfo.videoId]);
         }
-    }
-    
+    };
+
+
     useEffect(() => {
         getAllCourses()
     }, []);
@@ -400,9 +402,7 @@ const CoursePlayerPage = () => {
                                 controls
                                 className="w-full aspect-video object-cover"
                                 src={currVideoInfo.videoUrl}
-                                onEnded={() =>
-                                    markVideoCompleted(courseId, currVideoInfo.lectureId, currVideoInfo.videoId)
-                                }
+                                onEnded={handleVideoEnd}
                             >
                                 Your browser does not support the video tag.
                             </video>

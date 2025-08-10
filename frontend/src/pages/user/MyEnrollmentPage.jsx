@@ -38,23 +38,18 @@ const MyEnrollementPage = () => {
             <div key={enroll.course._id} className='flex items-center justify-between p-4 border-b border-zinc-500'>
 
               <Link to={`/player/${enroll.course._id}`} className='flex basis-[46%] cursor-pointer gap-2 w-full'>
-                <img src={enroll.course?.thumbnail} alt="" className='w-24 ' />
+                <img src={enroll?.course?.thumbnail} alt="" className='w-24 ' />
                 <div className='flex-1 flex flex-col '>
-                  <h1>{enroll.course.title}</h1>
+                  <h1>{enroll?.course.title}</h1>
                   <Line strokeWidth={2} percent={
-                    progressArray[index]
-                      ? (progressArray[index].lectureCompleted * 100) / (progressArray[index].totalLecture)
-                      : 0
+                      (enroll?.progress?.completedLectures?.length* 100) / (enroll?.course?.content?.length) || 0
                   } className='bg-gray-300 rounded-full' />
                 </div>
 
               </Link>
 
               <div>
-                {
-                  progressArray[index] &&
-                  `${progressArray[index].lectureCompleted}/${progressArray[index].totalLecture}`
-                }
+                  {`${enroll?.progress?.completedLectures?.length}/${enroll?.course?.content?.length}`  || 0}
               </div>
               <div>{new Date(enroll.enrolledAt).toLocaleDateString('en-IN',{
                 day:'2-digit',
@@ -64,14 +59,13 @@ const MyEnrollementPage = () => {
 
               <Link to={`/player/${enroll.course._id}`} 
               className={`btn basis-[10%]  
-              ${progressArray[index] &&progressArray[index].lectureCompleted / progressArray[index].totalLecture == 1
+              ${(enroll?.progress?.completedLectures?.length)/(enroll?.course?.content?.length) == 1
                 ?" bg-green-600 text-white "
                 :"btn-primary"
               }`}
               >
                 
-                {progressArray[index] &&
-                  progressArray[index].lectureCompleted / progressArray[index].totalLecture == 1
+                {(enroll?.progress?.completedLectures?.length)/(enroll?.course?.content?.length) == 1
                   ? "Completed" : "Ongoing"
                 }
               </Link>
