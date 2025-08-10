@@ -283,7 +283,7 @@ export const getEnrolledCourses = async (req, res) => {
     }
 }
 
-export const markeLectureCompleted = async (req, res) => {
+export const markeVideoCompleted = async (req, res) => {
     const { courseId, sectionId, videoId } = req.params;
 
     try {

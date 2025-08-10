@@ -3,7 +3,7 @@ import { protectRoute } from '../middleware/protectRoute.js';
 import { isAdmin} from '../middleware/roleMiddleware.js';
 import { 
     approveInstructor,requestInstructor,rejectInstructor,getOwnProfile,updateProfile,enrollInCourse
-    ,getEnrolledCourses,getStatus,deleteRequest,markeLectureCompleted
+    ,getEnrolledCourses,getStatus,deleteRequest,markeVideoCompleted
  } from '../controllers/user.controller.js';
 
 
@@ -18,7 +18,7 @@ router.get("/profile/:id", protectRoute, getOwnProfile)
 router.post("/update-profile", protectRoute, updateProfile)
 router.post("/enroll/:courseId", protectRoute, enrollInCourse);
 router.get("/enrolled-course", protectRoute, getEnrolledCourses)
-router.post('/progress/:courseId/complete/:lectureId',protectRoute,markeLectureCompleted)
+router.post( '/progress/:courseId/:sectionId/:videoId',protectRoute,markeVideoCompleted)
 
 
 

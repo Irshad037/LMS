@@ -11,6 +11,7 @@ import file_upload_icon from '../../assets/file_upload_icon.svg'
 import cross_icon from '../../assets/cross_icon.svg'
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import useAuthStore from '../../store/useAuthStore';
+import { useUserStore } from '../../store/useUserStore';
 
 const CoursePlayerPage = () => {
 
@@ -18,6 +19,8 @@ const CoursePlayerPage = () => {
         addVideoToSection, isAddingVideo, deleteSection, deleteSectionId, deleteVideo, deleteVideoId,
         addreview, isAddingReview, deleteReview, isDeletingReview, getAllCourses, AllCourses
     } = useCourseStore();
+
+    const { markVideoCompleted } = useUserStore();
 
     const { authUser } = useAuthStore();
 
@@ -34,7 +37,8 @@ const CoursePlayerPage = () => {
     const videoRef = useRef(null);
     const [sectionId, setSectionId] = useState("");
     const [formData, setFormData] = useState({ title: "", duration: "", video: null })
-    const [currVideoInfo, setCurrVideoInfo] = useState({ title: "", videoUrl: "", Sidx: 0, Vidx: 0 });
+    const [currVideoInfo, setCurrVideoInfo] = useState({ lectureId: "", videoId: "", title: "", videoUrl: "", Sidx: 0, Vidx: 0 });
+    const [completedVideos, setCompletedVideos] = useState([]);
 
 
     const currCourse = AllCourses?.find((course) => course._id === courseId);
@@ -101,7 +105,12 @@ const CoursePlayerPage = () => {
 
     };
 
-
+    const hcv = ()=>{
+        if (!completedVideos.includes) {
+            
+        }
+    }
+    
     useEffect(() => {
         getAllCourses()
     }, []);
@@ -209,7 +218,7 @@ const CoursePlayerPage = () => {
                                                 duration,
                                             }));
                                         }}
-                                        
+
                                     />
 
                                 </div>
@@ -330,6 +339,8 @@ const CoursePlayerPage = () => {
                                                     onClick={() => {
                                                         setPlayLecture(true)
                                                         setCurrVideoInfo({
+                                                            lectureId: section._id,
+                                                            videoId: video._id,
                                                             title: video.title,
                                                             videoUrl: video.videoUrl,
                                                             Vidx: idx,
@@ -389,6 +400,9 @@ const CoursePlayerPage = () => {
                                 controls
                                 className="w-full aspect-video object-cover"
                                 src={currVideoInfo.videoUrl}
+                                onEnded={() =>
+                                    markVideoCompleted(courseId, currVideoInfo.lectureId, currVideoInfo.videoId)
+                                }
                             >
                                 Your browser does not support the video tag.
                             </video>

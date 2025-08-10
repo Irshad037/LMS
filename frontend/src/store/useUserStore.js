@@ -90,6 +90,18 @@ export const useUserStore = create((set, get) => ({
     } finally {
       set({ isGettingEnrolCou: false })
     }
+  },
+
+  markVideoCompleted: async(courseId,sectionId,videoId)=>{
+    try {
+      const res = await axiosInstance.post(`/user/progress/${courseId}/${sectionId}/${videoId}`);
+      console.log(res.data.message);
+      
+    } catch (error) {
+      const errMsg = error?.response?.data?.error;
+      toast.error(errMsg);
+      console.error("Error in markVideoCompleted ", errMsg);
+    }
   }
 
 
