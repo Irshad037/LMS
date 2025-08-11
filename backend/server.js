@@ -9,6 +9,7 @@ import connectMongoDB from './config/mongodb.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import courseRoutes from './routes/instructor.route.js';
+import { stripeWebhooks } from './controllers/webhooks.js';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(cookieParser());  // ✅ Use cookie-parser middleware
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/course', courseRoutes);
+app.post('/stripe/webhook', express.raw({ type: 'application/json' }),  stripeWebhooks);
 
 const PORT = process.env.PORT || 3000;
 
