@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon backend/server.js",
-    "start": "node backend/server.js"
+    "dev": "NODE_ENV=development nodemon backend/server.js",
+    "start": "NODE_ENV=production node backend/server.js",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +22,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.0",
     "multer": "^2.0.1",
-    "multer-storage-cloudinary": "^4.0.0"
+    "multer-storage-cloudinary": "^4.0.0",
+    "stripe": "^18.4.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
