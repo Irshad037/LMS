@@ -28,9 +28,9 @@ app.use(cookieParser());  // ✅ Use cookie-parser middleware
 
 
 // API routes
-app.use('/api/auth',authRoutes);
-app.use('/api/user',userRoutes);
-app.use('/api/course',courseRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/course', courseRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 // ---------------------------------------
 
-app.listen(PORT, ()=>{
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 })
 
