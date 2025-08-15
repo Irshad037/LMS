@@ -18,25 +18,35 @@ await connectMongoDB();
 
 
 
-// Allow frontend requests
+
+
+// ✅ Allow both dev & prod frontend URLs
+const allowedOrigins = [
+  process.env.FRONTEND_DEV_URL || 'http://localhost:5173',
+  process.env.FRONTEND_PROD_URL || 'https://learnify-m8wq.onrender.com'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests without origin (mobile apps, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
-// Stripe webhook must be before express.json()
-
 app.post(
-  '/stripe',
-  express.raw({ type: 'application/json' }),
+  "/stripe",
+  express.raw({ type: "application/json" }),
   stripeWebhooks
 );
 
-
-app.use(express.json({ limit: '30mb' }));// For application/json
-app.use(express.urlencoded({ limit: '30mb', extended: true }));// For x-www-form-urlencoded
-app.use(cookieParser());  // ✅ Use cookie-parser middleware
-
+app.use(express.json({ limit: '30mb' }));
+app.use(express.urlencoded({ limit: '30mb', extended: true }));
+app.use(cookieParser());
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -53,14 +63,13 @@ if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../frontend/dist');
   app.use(express.static(frontendPath));
 
-  // Serve index.html for non-API routes only
+  // Serve index.html for non-API routes
   app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
-  })
+  });
 }
 // ---------------------------------------
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-})
-
+});

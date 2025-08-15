@@ -3,10 +3,9 @@ import Course from "../models/course.model.js";
 import InstructorRequest from "../models/instructorRequest.model.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import Stripe from 'stripe'
 
+import Stripe from "stripe";
 import Purchase from "../models/purchase.model.js";
-
 
 export const requestInstructor = async (req, res) => {
     try {
@@ -227,69 +226,67 @@ export const updateProfile = async (req, res) => {
 
 //lms=> 9:17:10
 
-
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const purchaseCourse = async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const userId = req.user._id;
+    try {
+        const { courseId } = req.params;
+        const userId = req.user._id;
 
-    const user = await User.findById(userId);
-    const course = await Course.findById(courseId);
+        const user = await User.findById(userId);
+        const course = await Course.findById(courseId);
 
-    if (!course || !user) {
-      return res.status(404).json({ error: "User or course not found" });
-    }
+        if (!course || !user) {
+            return res.status(404).json({ error: "User or course not found" });
+        }
 
-    // Already enrolled check
-    const alreadyEnrolled = user.enrolledCourses.some(
-      enrolled => enrolled.course?.toString() === courseId
-    );
-    if (alreadyEnrolled) {
-      return res.status(400).json({ error: "Already enrolled in this course" });
-    }
+        const alreadyEnrolled = user.enrolledCourses.some(
+            enrolled => enrolled.course?.toString() === courseId
+        );
+        if (alreadyEnrolled) {
+            return res.status(400).json({ error: "Already enrolled in this course" });
+        }
 
-    const amountUSD = course.discount || course.coursePrice;
-    const currency = process.env.CURRENCY?.toLowerCase() || "usd";
+        const amountUSD = course.discount || course.coursePrice;
+        const currency = process.env.CURRENCY?.toLowerCase() || "usd";
 
-    // Create pending purchase
-    const purchase = await Purchase.create({
-      courseId,
-      userId,
-      amount: amountUSD,
-      currency,
-      status: "pending",
-    });
-
-    // Create Stripe Checkout Session
-    const session = await stripeInstance.checkout.sessions.create({
-      mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
-      customer_email: user.email,
-      line_items: [
-        {
-          price_data: {
+        // Create pending purchase
+        const purchase = await Purchase.create({
+            courseId,
+            userId,
+            amount: amountUSD,
             currency,
-            product_data: { name: course.title },
-            unit_amount: Math.round(amountUSD * 100),
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        purchaseId: purchase._id.toString(),
-        userId: userId.toString(),
-        courseId: courseId.toString(),
-      },
-    });
+            status: "pending",
+        });
 
-    res.status(200).json({ session_url: session.url });
-  } catch (error) {
-    console.error("Error in purchaseCourse:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+        // Create Stripe Checkout Session
+        const session = await stripeInstance.checkout.sessions.create({
+            mode: "payment",
+            success_url: `${process.env.FRONTEND_DEV_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_DEV_URL}/payment-cancel`,
+            customer_email: user.email,
+            line_items: [
+                {
+                    price_data: {
+                        currency,
+                        product_data: { name: course.title },
+                        unit_amount: Math.round(amountUSD * 100),
+                    },
+                    quantity: 1,
+                },
+            ],
+            metadata: {
+                purchaseId: purchase._id.toString(),
+                userId: userId.toString(),
+                courseId: courseId.toString(),
+            },
+        });
+
+        res.status(200).json({ session_url: session.url });
+    } catch (error) {
+        console.error("Error in purchaseCourse:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 
