@@ -1,75 +1,53 @@
 import Stripe from "stripe";
-import Course from "../models/course.model.js";
-import { Purchase } from "../models/purchase.model.js";
+import Purchase from "../models/purchase.model.js";
 import User from "../models/user.model.js";
 
-
-//TODO:= not working check this and in user controller (purchaseCourse)
-
-const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
+const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const stripeWebhooks = async (req, res) => {
-    const sig = req.headers['stripe-signature'];
+  const sig = req.headers["stripe-signature"];
 
-    let event;
+  let event;
+  try {
+    event = stripeInstance.webhooks.constructEvent(
+      req.rawBody, // Make sure body parser doesn't parse JSON here
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
     try {
-        event = stripeInstance.webhooks.constructEvent(
-            req.body,
-            sig,
-            process.env.STRIPE_WEBHOOK_SECRET
-        );
+      const { purchaseId, userId, courseId } = session.metadata || {};
+
+      if (!purchaseId || !userId || !courseId) {
+        console.error("Webhook missing metadata");
+        return res.status(400).send("Missing metadata");
+      }
+
+      // Update purchase status
+      await Purchase.findByIdAndUpdate(purchaseId, { status: "completed" });
+
+      // Enroll user in course
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: {
+          enrolledCourses: {
+            course: courseId,
+            enrolledAt: new Date(),
+          },
+        },
+      });
+
+      console.log(`Purchase ${purchaseId} completed & user enrolled.`);
     } catch (err) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+      console.error("Error processing webhook:", err.message);
     }
+  }
 
-    switch (event.type) {
-        case 'checkout.session.completed': {
-            const session = event.data.object;
-            const purchaseId = session.metadata.purchaseId;
-
-            const purchaseData = await Purchase.findById(purchaseId);
-            const course = await Course.findById(purchaseData.courseId);
-            const user = await User.findById(purchaseData.userId);
-
-            const alreadyEnrolled = user.enrolledCourses.some(
-                enrolled => enrolled.course.toString() === purchaseData.courseId
-            );
-            if (alreadyEnrolled) {
-                return res.status(400).json({ error: "Already enrolled in this course" });
-            }
-
-            const accessDurationInDays = course.additionalBenefits.accessDurationInDays || 730;
-            const enrolledAt = new Date();
-            const expiresAt = new Date(enrolledAt.getTime() + accessDurationInDays * 24 * 60 * 60 * 1000);
-
-            user.enrolledCourses.push({ course: purchaseData.courseId, enrolledAt });
-            await user.save();
-
-            course.enrolledStudents.push({
-                student: user._id,
-                enrolledAt,
-                expiresAt,
-            });
-            await course.save();
-
-            purchaseData.status = 'completed';
-            await purchaseData.save();
-
-            break;
-        }
-        case 'payment_intent.payment_failed': {
-            const session = event.data.object;
-            const purchaseId = session.metadata.purchaseId;
-
-            const purchaseData = await Purchase.findById(purchaseId);
-            purchaseData.status = 'failed';
-            await purchaseData.save();
-
-            break;
-        }
-        default:
-            console.log(`Unhandled event type ${event.type}`);
-    }
-
-    res.json({ received: true });
+  res.json({ received: true });
 };
