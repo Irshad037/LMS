@@ -4,17 +4,18 @@ import { Purchase } from "../models/purchase.model.js";
 import User from "../models/user.model.js";
 
 
-
+//TODO:= not working check this and in user controller (purchaseCourse)
 
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 export const stripeWebhooks = async (request, response) => {
+
     const sig = request.headers['stripe-signature'];
 
     let event;
 
     try {
-        event = stripeInstance.webhooks.constructEvent(request.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        event = Stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     }
     catch (err) {
         return response.status(400).send(`Webhook Error: ${err.message}`);
