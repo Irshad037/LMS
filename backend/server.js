@@ -25,11 +25,13 @@ app.use(cors({
 }));
 
 // Stripe webhook must be before express.json()
+
 app.post(
   '/stripe',
   express.raw({ type: 'application/json' }),
   stripeWebhooks
 );
+
 
 app.use(express.json({ limit: '30mb' }));// For application/json
 app.use(express.urlencoded({ limit: '30mb', extended: true }));// For x-www-form-urlencoded
