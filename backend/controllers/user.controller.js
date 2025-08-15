@@ -225,7 +225,6 @@ export const updateProfile = async (req, res) => {
 }
 
 //lms=> 9:17:10
-
 export const purchaseCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
@@ -238,17 +237,26 @@ export const purchaseCourse = async (req, res) => {
       return res.status(404).json({ error: "User or course not found" });
     }
 
+    // Check if already enrolled
+    const alreadyEnrolled = user.enrolledCourses.some(
+      enrolled => enrolled.course.toString() === courseId
+    );
+    if (alreadyEnrolled) {
+      return res.status(400).json({ error: "Already enrolled in this course" });
+    }
+
     const amountUSD = course.discount || course.coursePrice;
+    const currency = process.env.CURRENCY.toLowerCase();
 
     const newPurchase = await Purchase.create({
       courseId,
       userId,
       amount: amountUSD,
+      currency,
       status: "pending",
     });
 
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const currency = process.env.CURRENCY.toLowerCase();
 
     const line_items = [
       {
@@ -262,14 +270,13 @@ export const purchaseCourse = async (req, res) => {
     ];
 
     const session = await stripeInstance.checkout.sessions.create({
+      mode: "payment",
       success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
+      customer_email: user.email,
       line_items,
-      mode: "payment",
       metadata: {
         purchaseId: newPurchase._id.toString(),
-        userId: userId.toString(),
-        courseId: courseId.toString(),
       },
     });
 
