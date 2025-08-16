@@ -33,7 +33,7 @@ const LoginPage = () => {
 
       <form onSubmit={handleSubmit} className='flex-1 flex flex-col justify-center gap-4 '>
 
-        <h1 className='text-4xl font-extrabold flex-col'>Let go.</h1>
+        <h1 className='text-4xl font-extrabold flex-col'>Lets go.</h1>
         <label className='w-[300px] h-[45px] p-2 gap-1 border-2 flex items-center justify-between border-black rounded-[7px]'>
           <MdOutlineMail className='w-[25px]' />
           <input
