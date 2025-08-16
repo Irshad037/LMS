@@ -6,12 +6,15 @@ import microsoft_logo from '../assets/microsoft_logo.svg'
 import adobe_logo from '../assets/adobe_logo.svg'
 import accenture_logo from '../assets/accenture_logo.svg'
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCourseStore } from '../store/useCourseStore';
 import { useEffect } from 'react';
+import { useState } from 'react';
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const {AllCourses,getAllCourses} = useCourseStore();
+  const[input, setInput] = useState("");
 
   useEffect(()=>{
     getAllCourses();
@@ -32,8 +35,13 @@ const HomePage = () => {
 
       <div className='flex bg-white rounded-md w-[576px] items-center justify-center p-1 pl-4 text-zinc-600'>
         <IoIosSearch size={26} />
-        <input type="text" className='flex-1 outline-none border-none bg-transparent text-xl' />
-        <button className='btn btn-primary w-28 h-14 text-xl px-20'>Search</button>
+        <input type="text" className='flex-1 outline-none border-none bg-transparent text-xl'
+        value={input}
+        onChange={(e)=>setInput(e.target.value)}
+         />
+        <button className='btn btn-primary w-28 h-14 text-xl px-20'
+        onClick={()=>{navigate(`/all-courses/${encodeURIComponent(input)}`)}} 
+        >Search</button>
       </div>
 
       <div className='flex flex-col w-full my-20'>

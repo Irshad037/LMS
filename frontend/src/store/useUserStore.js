@@ -64,19 +64,19 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  enrollInCourse: async (courseId) => {
-    set({ isEnrolling: true })
-    try {
-      const res = await axiosInstance.post(`/user/enroll/${courseId}`)
-      toast.success(res.data.message)
-    } catch (error) {
-      const errmsg = error?.response?.data?.error;
-      console.error("Error in enrollInCourse: ", errmsg);
-      toast.error(errmsg);
-    } finally {
-      set({ isEnrolling: false });
-    }
-  },
+  // enrollInCourse: async (courseId) => {
+  //   set({ isEnrolling: true })
+  //   try {
+  //     const res = await axiosInstance.post(`/user/enroll/${courseId}`)
+  //     toast.success(res.data.message)
+  //   } catch (error) {
+  //     const errmsg = error?.response?.data?.error;
+  //     console.error("Error in enrollInCourse: ", errmsg);
+  //     toast.error(errmsg);
+  //   } finally {
+  //     set({ isEnrolling: false });
+  //   }
+  // },
 
   purchaseCourse: async (courseId) => {
     set({ isEnrolling: true });

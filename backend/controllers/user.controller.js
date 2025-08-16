@@ -245,10 +245,10 @@ export const purchaseCourse = async (req, res) => {
     const currency = process.env.CURRENCY?.toLowerCase() || "usd";
 
     // Which frontend URL to use
-    const FRONTEND_URL =
-      process.env.NODE_ENV === "production"
-        ? process.env.FRONTEND_PROD_URL
-        : process.env.FRONTEND_DEV_URL;
+    // const FRONTEND_URL =
+    //   process.env.NODE_ENV === "production"
+    //     ? process.env.FRONTEND_PROD_URL
+    //     : process.env.FRONTEND_DEV_URL;
 
     // Create pending purchase
     const purchase = await Purchase.create({
@@ -294,48 +294,48 @@ export const purchaseCourse = async (req, res) => {
 
 
 
-export const enrollInCourse = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const { courseId } = req.params;
+// export const enrollInCourse = async (req, res) => {
+//     try {
+//         const userId = req.user._id;
+//         const { courseId } = req.params;
 
-        const user = await User.findById(userId);
-        const course = await Course.findById(courseId);
+//         const user = await User.findById(userId);
+//         const course = await Course.findById(courseId);
 
-        if (!course || !user) {
-            return res.status(404).json({ error: "User or course not found" });
-        }
+//         if (!course || !user) {
+//             return res.status(404).json({ error: "User or course not found" });
+//         }
 
-        const alreadyEnrolled = user.enrolledCourses.some(
-            (enrolled) => enrolled.course.toString() === courseId
-        );
+//         const alreadyEnrolled = user.enrolledCourses.some(
+//             (enrolled) => enrolled.course.toString() === courseId
+//         );
 
-        if (alreadyEnrolled) {
-            return res.status(400).json({ error: "Already enrolled in this course" });
-        }
-        const accessDurationInDays = course.additionalBenefits.accessDurationInDays || 730; // Default to 2 years if not set
-        const enrolledAt = new Date();
-        const expiresAt = new Date(enrolledAt.getTime() + accessDurationInDays * 24 * 60 * 60 * 1000); // Add access duration in milliseconds
+//         if (alreadyEnrolled) {
+//             return res.status(400).json({ error: "Already enrolled in this course" });
+//         }
+//         const accessDurationInDays = course.additionalBenefits.accessDurationInDays || 730; // Default to 2 years if not set
+//         const enrolledAt = new Date();
+//         const expiresAt = new Date(enrolledAt.getTime() + accessDurationInDays * 24 * 60 * 60 * 1000); // Add access duration in milliseconds
 
 
-        // Add course to user's enrolledCourses
-        user.enrolledCourses.push({ course: courseId, enrolledAt });
-        await user.save();
+//         // Add course to user's enrolledCourses
+//         user.enrolledCourses.push({ course: courseId, enrolledAt });
+//         await user.save();
 
-        // ✅ Add student to course's enrolledStudents with full object
-        course.enrolledStudents.push({
-            student: user._id,
-            enrolledAt,
-            expiresAt,
-        });
-        await course.save();
+//         // ✅ Add student to course's enrolledStudents with full object
+//         course.enrolledStudents.push({
+//             student: user._id,
+//             enrolledAt,
+//             expiresAt,
+//         });
+//         await course.save();
 
-        res.status(200).json({ message: "Enrolled in course successfully", courseId });
-    } catch (error) {
-        console.error("Error in enrollInCourse controller", error.message);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
+//         res.status(200).json({ message: "Enrolled in course successfully", courseId });
+//     } catch (error) {
+//         console.error("Error in enrollInCourse controller", error.message);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// };
 
 
 export const getEnrolledCourses = async (req, res) => {
