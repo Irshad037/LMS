@@ -230,67 +230,66 @@ export const updateProfile = async (req, res) => {
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const purchaseCourse = async (req, res) => {
-    try {
-        const { courseId } = req.params;
-        const userId = req.user._id;
+  try {
+    const { courseId } = req.params;
+    const userId = req.user._id;
 
-        const user = await User.findById(userId);
-        const course = await Course.findById(courseId);
+    const user = await User.findById(userId);
+    const course = await Course.findById(courseId);
 
-        if (!course || !user) {
-            return res.status(404).json({ error: "User or course not found" });
-        }
-
-        const amountUSD = course.discount || course.coursePrice;
-        const currency = process.env.CURRENCY?.toLowerCase() || "usd";
-
-        const FRONTEND_URL =
-            process.env.NODE_ENV === "production"
-                ? process.env.FRONTEND_PROD_URL
-                : process.env.FRONTEND_DEV_URL;
-
-        // Create pending purchase
-        const purchase = await Purchase.create({
-            courseId,
-            userId,
-            amount: amountUSD,
-            currency,
-            status: "pending",
-        });
-
-        // Create Stripe session
-        const session = await stripeInstance.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items: [
-                {
-                    price_data: {
-                        currency,
-                        product_data: { name: course.title },
-                        unit_amount: Math.round(amountUSD * 100),
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: "payment",
-            success_url: `${FRONTEND_URL}/my-enrollments?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${FRONTEND_URL}/purchase/${courseId}`,
-            customer_email: user.email,
-            payment_intent_data: {
-                metadata: {
-                    purchaseId: purchase._id.toString(),
-                    userId: userId.toString(),
-                    courseId: courseId.toString(),
-                },
-            },
-        });
-
-        res.status(200).json({ session_url: session.url });
-    } catch (error) {
-        console.error("Error in purchaseCourse:", error);
-        res.status(500).json({ error: "Internal server error" });
+    if (!course || !user) {
+      return res.status(404).json({ error: "User or course not found" });
     }
-};
 
+    const amountUSD = course.discount || course.coursePrice;
+    const currency = process.env.CURRENCY?.toLowerCase() || "usd";
+
+    // Which frontend URL to use
+    const FRONTEND_URL =
+      process.env.NODE_ENV === "production"
+        ? process.env.FRONTEND_PROD_URL
+        : process.env.FRONTEND_DEV_URL;
+
+    // Create pending purchase
+    const purchase = await Purchase.create({
+      courseId,
+      userId,
+      amount: amountUSD,
+      currency,
+      status: "pending",
+    });
+
+    const session = await stripeInstance.checkout.sessions.create({
+      mode: "payment",
+      success_url: `https://learnify-m8wq.onrender.com/my-enrollments`,
+      cancel_url: `https://learnify-m8wq.onrender.com/purchase/${courseId}`,
+      customer_email: user.email,
+      line_items: [
+        {
+          price_data: {
+            currency,
+            product_data: { name: course.title },
+            unit_amount: Math.round(amountUSD * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      payment_intent_data: {
+        metadata: {
+          purchaseId: purchase._id.toString(),
+          userId: userId.toString(),
+          courseId: courseId.toString(),
+        },
+      },
+    });
+    
+
+    res.status(200).json({ session_url: session.url });
+  } catch (error) {
+    console.error("Error in purchaseCourse:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 
 
