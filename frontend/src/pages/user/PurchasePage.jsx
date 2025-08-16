@@ -13,13 +13,13 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const PurchasePage = () => {
     const { getAllCourses, AllCourses } = useCourseStore();
-    const { enrollInCourse, isEnrolling } = useUserStore();
+    const { enrollInCourse, isEnrolling , purchaseCourse} = useUserStore();
 
     const [openSection, setOpenSection] = useState({})
     const { courseId } = useParams();
 
     const currCourse = AllCourses?.find((course) => course._id === courseId)
-    const averageRating = 3.5;
+    // const averageRating = 3.5;
 
     const toggleSection = (index) => {
         setOpenSection((prev) => ({
@@ -73,8 +73,8 @@ const PurchasePage = () => {
                     {Array.from({ length: 5 }, (_, i) => {
                         const value = i + 1;
                         if (currCourse?.averageRating > value) return <FaStar size={14} />
-                        else if (currCourse?.averageRating >= value - 0.5) return <FaStarHalfAlt size={15} />
-                        else return <FaRegStar size={16} />
+                        else if (currCourse?.averageRating >= value - 0.5) return <FaStarHalfAlt size={15}/>
+                        else return <FaRegStar size={16}/>
                     })}
                     <p className="text-gray-500 text-base leading-relaxed ">
                         <span className='text-blue-500 mx-1'> ({currCourse?.reviews.length}) </span>{currCourse?.enrolledStudents?.length} students
@@ -186,7 +186,7 @@ const PurchasePage = () => {
 
                         <button
                             className="btn btn-primary w-full my-6 flex items-center justify-center gap-2"
-                            onClick={() => enrollInCourse(courseId)}
+                            onClick={() => purchaseCourse(courseId)}
                             disabled={isEnrolling}
                         >
                             {isEnrolling ? (

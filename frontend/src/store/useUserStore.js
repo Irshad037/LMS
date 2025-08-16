@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
 export const useUserStore = create((set, get) => ({
   instructorRequest: null,
   enrolledCourse: [],
@@ -70,6 +74,32 @@ export const useUserStore = create((set, get) => ({
       console.error("Error in enrollInCourse: ", errmsg);
       toast.error(errmsg);
     } finally {
+      set({ isEnrolling: false });
+    }
+  },
+
+  purchaseCourse: async(courseId)=>{
+    set({ isEnrolling: true })
+    try {
+      const res = await axiosInstance.post(`/user/purchase/${courseId}`)
+      const { sessionId } = res.data;
+      if (!sessionId) {
+        throw new Error("Session ID not found in response");
+      }
+
+      const stripe = await stripePromise;
+      if(stripe){
+        await stripe.redirectToCheckout({ sessionId });
+      }else{
+        throw new Error("Stripe failed to load");
+      }
+
+    } catch (error) {
+      const errMsg = error?.response?.data?.error;
+      console.error(errMsg);
+      toast.error(errMsg);
+    } 
+    finally {
       set({ isEnrolling: false });
     }
   },
