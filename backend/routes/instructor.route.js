@@ -20,7 +20,7 @@ router.get("/instructor/courses",protectRoute,isInstructor,getAllMyCreatedCourse
 router.post("/:courseId/add-review", protectRoute, addreviewToCourse);
 router.delete("/:courseId/delete-review/:reviewId", protectRoute, deleteMyReview);
 router.get("/:courseId/show-review/", protectRoute, showReviewToCourse);
-router.get("/all-courses", protectRoute, showAllCourse);
+router.get("/all-courses", showAllCourse);
 router.get("/enrolledStudent", protectRoute,NoOfStudentEnrolled)
 router.get("/search", searchCourse)
 
