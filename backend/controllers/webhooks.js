@@ -1,4 +1,4 @@
-// controllers/webhooks.js
+
 import Stripe from "stripe";
 import Purchase from "../models/purchase.model.js";
 import User from "../models/user.model.js";
@@ -68,14 +68,7 @@ export const stripeWebhooks = async (req, res) => {
     }
   };
 
-  // 🔹 Handle checkout.session.completed
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    console.log("📦 Checkout Session Metadata:", session.metadata);
-    await completeEnrollment(session.metadata || {});
-  }
-
-  // 🔹 Handle payment_intent.succeeded (optional)
+  // 🔹 Handle payment_intent.succeeded (with metadata)
   if (event.type === "payment_intent.succeeded") {
     const intent = event.data.object;
     console.log("📦 Payment Intent Metadata:", intent.metadata);
