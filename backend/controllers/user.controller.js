@@ -230,65 +230,72 @@ export const updateProfile = async (req, res) => {
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const purchaseCourse = async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const userId = req.user._id;
+    try {
+        const { courseId } = req.params;
+        const userId = req.user._id;
 
-    const user = await User.findById(userId);
-    const course = await Course.findById(courseId);
+        const user = await User.findById(userId);
+        const course = await Course.findById(courseId);
 
-    if (!course || !user) {
-      return res.status(404).json({ error: "User or course not found" });
-    }
+        if (!course || !user) {
+            return res.status(404).json({ error: "User or course not found" });
+        }
+        
+        const alreadyEnrolled = user.enrolledCourses.some(
+            enrolled => enrolled.course?.toString() === courseId
+        );
+        if (alreadyEnrolled) {
+            return res.status(400).json({ error: "Already enrolled in this course" });
+        }
 
-    const amountUSD = course.discount || course.coursePrice;
-    const currency = process.env.CURRENCY?.toLowerCase() || "usd";
+        const amountUSD = course.discount || course.coursePrice;
+        const currency = process.env.CURRENCY?.toLowerCase() || "usd";
 
-    // Which frontend URL to use
-    // const FRONTEND_URL =
-    //   process.env.NODE_ENV === "production"
-    //     ? process.env.FRONTEND_PROD_URL
-    //     : process.env.FRONTEND_DEV_URL;
+        // Which frontend URL to use
+        // const FRONTEND_URL =
+        //   process.env.NODE_ENV === "production"
+        //     ? process.env.FRONTEND_PROD_URL
+        //     : process.env.FRONTEND_DEV_URL;
 
-    // Create pending purchase
-    const purchase = await Purchase.create({
-      courseId,
-      userId,
-      amount: amountUSD,
-      currency,
-      status: "pending",
-    });
-
-    const session = await stripeInstance.checkout.sessions.create({
-      mode: "payment",
-      success_url: `https://learnify-m8wq.onrender.com/my-enrollments`,
-      cancel_url: `https://learnify-m8wq.onrender.com/purchase/${courseId}`,
-      customer_email: user.email,
-      line_items: [
-        {
-          price_data: {
+        // Create pending purchase
+        const purchase = await Purchase.create({
+            courseId,
+            userId,
+            amount: amountUSD,
             currency,
-            product_data: { name: course.title },
-            unit_amount: Math.round(amountUSD * 100),
-          },
-          quantity: 1,
-        },
-      ],
-      payment_intent_data: {
-        metadata: {
-          purchaseId: purchase._id.toString(),
-          userId: userId.toString(),
-          courseId: courseId.toString(),
-        },
-      },
-    });
-    
+            status: "pending",
+        });
 
-    res.status(200).json({ session_url: session.url });
-  } catch (error) {
-    console.error("Error in purchaseCourse:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+        const session = await stripeInstance.checkout.sessions.create({
+            mode: "payment",
+            success_url: `https://learnify-m8wq.onrender.com/my-enrollments`,
+            cancel_url: `https://learnify-m8wq.onrender.com/purchase/${courseId}`,
+            customer_email: user.email,
+            line_items: [
+                {
+                    price_data: {
+                        currency,
+                        product_data: { name: course.title },
+                        unit_amount: Math.round(amountUSD * 100),
+                    },
+                    quantity: 1,
+                },
+            ],
+            payment_intent_data: {
+                metadata: {
+                    purchaseId: purchase._id.toString(),
+                    userId: userId.toString(),
+                    courseId: courseId.toString(),
+                },
+            },
+        });
+
+
+        res.status(200).json({ session_url: session.url });
+    } catch (error) {
+        console.error("Error in purchaseCourse:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 
