@@ -243,9 +243,9 @@ export const purchaseCourse = async (req, res) => {
         const alreadyEnrolled = user.enrolledCourses.some(
             enrolled => enrolled.course?.toString() === courseId
         );
-        if (alreadyEnrolled) {
-            return res.status(400).json({ error: "Already enrolled in this course" });
-        }
+        // if (alreadyEnrolled) {
+        //     return res.status(400).json({ error: "Already enrolled in this course" });
+        // }
 
         const amountUSD = course.discount || course.coursePrice;
         const currency = process.env.CURRENCY?.toLowerCase() || "usd";
@@ -281,6 +281,7 @@ export const purchaseCourse = async (req, res) => {
                 courseId: courseId.toString(),
             },
         });
+        
 
         res.status(200).json({ session_url: session.url });
     } catch (error) {
