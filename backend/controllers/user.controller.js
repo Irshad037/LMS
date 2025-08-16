@@ -244,6 +244,12 @@ export const purchaseCourse = async (req, res) => {
     const amountUSD = course.discount || course.coursePrice;
     const currency = process.env.CURRENCY?.toLowerCase() || "usd";
 
+    // Which frontend URL to use
+    const FRONTEND_URL =
+      process.env.NODE_ENV === "production"
+        ? process.env.FRONTEND_PROD_URL
+        : process.env.FRONTEND_DEV_URL;
+
     // Create pending purchase
     const purchase = await Purchase.create({
       courseId,
@@ -253,11 +259,10 @@ export const purchaseCourse = async (req, res) => {
       status: "pending",
     });
 
-    // Create Stripe Checkout Session with metadata on payment_intent
     const session = await stripeInstance.checkout.sessions.create({
       mode: "payment",
-      success_url: `${process.env.FRONTEND_DEV_URL}/my-enrollments`,
-      cancel_url: `${process.env.FRONTEND_DEV_URL}/purchase/${courseId}`,
+      success_url: `${FRONTEND_URL}/my-enrollments`,
+      cancel_url: `${FRONTEND_URL}/purchase/${courseId}`,
       customer_email: user.email,
       line_items: [
         {
@@ -284,6 +289,7 @@ export const purchaseCourse = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 

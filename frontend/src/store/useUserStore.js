@@ -78,28 +78,24 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  purchaseCourse: async(courseId)=>{
-    set({ isEnrolling: true })
+  purchaseCourse: async (courseId) => {
+    set({ isEnrolling: true });
     try {
-      const res = await axiosInstance.post(`/user/purchase/${courseId}`)
-      const { sessionId } = res.data;
-      if (!sessionId) {
-        throw new Error("Session ID not found in response");
+      const res = await axiosInstance.post(`/user/purchase/${courseId}`);
+      const { session_url } = res.data;
+
+      if (!session_url) {
+        throw new Error("Session URL not found in response");
       }
 
-      const stripe = await stripePromise;
-      if(stripe){
-        await stripe.redirectToCheckout({ sessionId });
-      }else{
-        throw new Error("Stripe failed to load");
-      }
+      // 🚀 Redirect directly to Stripe checkout page
+      window.location.href = session_url;
 
     } catch (error) {
-      const errMsg = error?.response?.data?.error;
+      const errMsg = error?.response?.data?.error || "Something went wrong";
       console.error(errMsg);
       toast.error(errMsg);
-    } 
-    finally {
+    } finally {
       set({ isEnrolling: false });
     }
   },
@@ -122,11 +118,11 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  markVideoCompleted: async(courseId,sectionId,videoId)=>{
+  markVideoCompleted: async (courseId, sectionId, videoId) => {
     try {
       const res = await axiosInstance.post(`/user/progress/${courseId}/${sectionId}/${videoId}`);
       console.log(res.data.message);
-      
+
     } catch (error) {
       const errMsg = error?.response?.data?.error;
       toast.error(errMsg);
