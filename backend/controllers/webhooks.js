@@ -1,4 +1,4 @@
-
+// controllers/webhooks.js
 import Stripe from "stripe";
 import Purchase from "../models/purchase.model.js";
 import User from "../models/user.model.js";
@@ -12,7 +12,7 @@ export const stripeWebhooks = async (req, res) => {
 
   try {
     event = stripeInstance.webhooks.constructEvent(
-      req.body, // req.body must be express.raw()
+      req.body, // NOTE: req.body must be express.raw()
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
@@ -23,10 +23,12 @@ export const stripeWebhooks = async (req, res) => {
 
   console.log("📦 Stripe Event:", event.type);
 
-  // Helper for enrolling user after successful payment
+  // ✅ Enrollment Helper
   const completeEnrollment = async ({ purchaseId, userId, courseId }) => {
     try {
-      if (!purchaseId || !userId || !courseId) throw new Error("Missing metadata");
+      if (!purchaseId || !userId || !courseId) {
+        throw new Error("Missing metadata (purchaseId, userId, or courseId)");
+      }
 
       // ✅ Mark purchase completed
       await Purchase.findByIdAndUpdate(purchaseId, { status: "completed" });
@@ -37,38 +39,58 @@ export const stripeWebhooks = async (req, res) => {
 
       if (!user || !course) throw new Error("User or Course not found");
 
-      // ✅ Calculate access
-      const accessDurationInDays = course.additionalBenefits?.accessDurationInDays || 730;
+      // ✅ Calculate course access expiry
+      const accessDurationInDays =
+        course.additionalBenefits?.accessDurationInDays || 730;
       const enrolledAt = new Date();
-      const expiresAt = new Date(enrolledAt.getTime() + accessDurationInDays * 24 * 60 * 60 * 1000);
+      const expiresAt = new Date(
+        enrolledAt.getTime() + accessDurationInDays * 24 * 60 * 60 * 1000
+      );
 
       // ✅ Ensure arrays exist
       if (!Array.isArray(user.enrolledCourses)) user.enrolledCourses = [];
       if (!Array.isArray(course.enrolledStudents)) course.enrolledStudents = [];
 
       // ✅ Add to User
-      if (!user.enrolledCourses.some(e => e.course.toString() === courseId.toString())) {
-        user.enrolledCourses.push({ 
-          course: courseId, 
+      if (
+        !user.enrolledCourses.some(
+          (e) => e.course?.toString() === courseId.toString()
+        )
+      ) {
+        user.enrolledCourses.push({
+          course: courseId,
           enrolledAt,
-          progress: { completedVideos: [], completedLectures: [] }
+          progress: { completedVideos: [], completedLectures: [] },
         });
         await user.save();
       }
 
       // ✅ Add to Course
-      if (!course.enrolledStudents.some(s => s.student.toString() === userId.toString())) {
+      if (
+        !course.enrolledStudents.some(
+          (s) => s.student?.toString() === userId.toString()
+        )
+      ) {
         course.enrolledStudents.push({ student: user._id, enrolledAt, expiresAt });
         await course.save();
       }
 
-      console.log(`✅ Purchase ${purchaseId} completed & user ${userId} enrolled in course ${courseId}`);
+      console.log(
+        `✅ Purchase ${purchaseId} completed & user ${userId} enrolled in course ${courseId}`
+      );
     } catch (err) {
       console.error("❌ Enrollment failed:", err.message);
     }
   };
 
-  // 🔹 Handle payment_intent.succeeded (with metadata)
+  // 🔹 Handle checkout.session.completed
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    console.log("📦 Checkout Session Metadata:", session.metadata);
+    await completeEnrollment(session.metadata || {});
+  }
+
+  // 🔹 Handle payment_intent.succeeded
   if (event.type === "payment_intent.succeeded") {
     const intent = event.data.object;
     console.log("📦 Payment Intent Metadata:", intent.metadata);
